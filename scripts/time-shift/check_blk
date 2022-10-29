@@ -1,23 +1,77 @@
 #! /usr/bin/env bash
 
+help(){
+cat << EOF
+Checks that all block devices exist. UUIDs must be passed in to script.
+
+Options:
+ -q Do not print messages
+ -h Print this message and exit
+
+Exit Codes:
+  0 if all block devices exist
+  1 if any block devices not found
+
+Example:
+  check_blk -q UUID-1 UUID-2 
+EOF
+}
+
+die(){
+    >&2 printf %s\\n "$*"
+    exit 1
+}
+
+quiet=false
+
+while :; do
+    case $1 in
+        # Two hyphens ends the options parsing
+        --)
+            shift
+            break
+            ;;
+        # Print help by calling a help() function that you define later
+        -h|--help)
+            help
+            exit
+            ;;
+        # Parse an option value via this syntax: --foo bar
+        -q|--quiet)
+            quiet=true
+            ;;
+        # Anything remaining that starts with a dash triggers a fatal error
+        -?*)
+            die "The command line option is unknown: " "$1"
+            ;;
+        # Anything remaining is treated as content not a parseable option
+        *)
+            break
+            ;;
+    esac
+    shift
+done
+
 UUIDS="${@}"
 ALL_FOUND=0
 
 if [ -z "${UUIDS}" ]
 then
-  printf "Error: This script requires one or more UUID arguments\n" >&2
+  >&2 printf "Error: This script requires one or more UUID arguments\n" 
   exit 2
 fi
 
 for UUID in "${@}"
 do
-
-  if ! lsblk -o UUID -lpn | grep -q "${UUID}"
+  if ! lsblk -o UUID -lpn | grep -q "^${UUID}$"
   then
-    printf "Error: Failed to find block device with file system UUID=%s\n" ${UUID} >&2
+    >&2 printf "Error: Failed to find block device with file system UUID=%s\n" ${UUID}
     ALL_FOUND=1
   else
-    printf "Found Block Device ${UUID}.\n"
+    if ! ${quiet}
+    then
+      printf "Found Block Device ${UUID}.\n"
+    fi
   fi
 
 done

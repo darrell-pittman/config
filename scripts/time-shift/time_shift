@@ -1,45 +1,33 @@
 #! /usr/bin/env bash
 
+set -euf -o pipefail
+
 SCRIPT_DIR=$(cd -- $(dirname -- "${BASH_SOURCE[0]}")>/dev/null && pwd)
 
-source ${SCRIPT_DIR}/utils
-source ${SCRIPT_DIR}/consts
+. ${SCRIPT_DIR}/consts
 
 TODAY=$(date +%Y%m%d)
 
-# Check that required block devices exist
-if ! ${SCRIPT_DIR}/check_blk "${ARTIX_UUID}" "${BACKUP_UUID}"
-then
-  exit 1
-fi
-
-ARTIX_DEVICE=$(${SCRIPT_DIR}/device_name ${ARTIX_UUID})
-printf "Artix Device Name: %s\n" ${ARTIX_DEVICE}
+SOURCE_DEVICE=$(${SCRIPT_DIR}/device_name ${SOURCE_UUID})
+printf "Source Device Name: %s\n" ${SOURCE_DEVICE}
 
 BACKUP_DEVICE=$(${SCRIPT_DIR}/device_name ${BACKUP_UUID})
 printf "Backup Device Name: %s\n" ${BACKUP_DEVICE}
 
-UNMOUNT_ARTIX=true
-UNMOUNT_BACKUP=true
+UNMOUNT_SOURCE="$(${SCRIPT_DIR}/check_mount \
+  ${SOURCE_DEVICE} ${SOURCE_TARGET} ${SOURCE_UUID})"
 
-if ! check_mount ${ARTIX_TARGET} ${ARTIX_DEVICE} ${ARTIX_UUID} 
-then
-  UNMOUNT_ARTIX=false
-fi
-
-if ! check_mount ${BACKUP_TARGET} ${BACKUP_DEVICE} ${BACKUP_UUID} 
-then
-  UNMOUNT_BACKUP=false
-fi
+UNMOUNT_BACKUP="$(${SCRIPT_DIR}/check_mount \
+  ${BACKUP_DEVICE} ${BACKUP_TARGET} ${BACKUP_UUID})"
 
 trap_exit() {
-  if ${UNMOUNT_ARTIX}
+  if [ "${UNMOUNT_SOURCE}" == "TRUE" ]
   then
-    printf "Unmounting %s\n" "${ARTIX_TARGET}"
-    umount ${ARTIX_TARGET}
+    printf "Unmounting %s\n" "${SOURCE_TARGET}"
+    umount ${SOURCE_TARGET}
   fi
 
-  if ${UNMOUNT_BACKUP}
+  if [ "${UNMOUNT_BACKUP}" == "TRUE" ]
   then
     printf "Unmounting %s\n" "${BACKUP_TARGET}"
     umount ${BACKUP_TARGET}
@@ -63,30 +51,30 @@ run_timeshift() {
 
   if ! ${SUBVOL_OK} 
   then
-    printf "Invalid Subvol: %s\n" ${SUBVOL}
+    >&2 printf "Error: Invalid Subvol: %s\n" ${SUBVOL}
     return -1
   fi
 
   printf "Running timeshift for subvolume '%s'\n" ${SUBVOL}
   local CURRENT=${SUBVOL}_${TODAY}
-  local CURRENT_PATH="${ARTIX_TARGET}/${CURRENT}"
+  local CURRENT_PATH="${SOURCE_TARGET}/${CURRENT}"
   local BACKUP_CURRENT_PATH="${BACKUP_TARGET}/${CURRENT}" 
 
   if [ ! -d "${CURRENT_PATH}" ]
   then
-    btrfs subvolume snapshot -r "${ARTIX_TARGET}/${SUBVOL}" "${CURRENT_PATH}"
+    btrfs subvolume snapshot -r "${SOURCE_TARGET}/${SUBVOL}" "${CURRENT_PATH}"
   else
     if [ ! -d "${BACKUP_CURRENT_PATH}" ]
     then
-      printf "Error: Failed to find current backup.\n"
+      >&2 printf "Error: Failed to find current backup.\n"
       exit 1
     fi
-    printf "Current Snapshot and Backup aleady exists for subvolume '%s'\n" ${SUBVOL}
+    printf "Current Snapshot and Backup aleady exist for subvolume '%s'\n" ${SUBVOL}
     return 0
   fi
 
   
-  local SNAPSHOTDATE_UNSAFE=$(\ls ${ARTIX_TARGET} \
+  local SNAPSHOTDATE_UNSAFE=$(\ls ${SOURCE_TARGET} \
     | sed -n -e "/^${CURRENT}$/d" \
              -e "s/^${SUBVOL}_\([[:digit:]]\{8\}\)$/\1/p" \
     | sort -r \
@@ -94,11 +82,11 @@ run_timeshift() {
 
   local SNAPSHOT_DATE=${SNAPSHOTDATE_UNSAFE:-0}
   local PARENT="${SUBVOL}_${SNAPSHOT_DATE}"
-  local PARENT_PATH="${ARTIX_TARGET}/${PARENT}"
+  local PARENT_PATH="${SOURCE_TARGET}/${PARENT}"
 
   if ((SNAPSHOT_DATE < SAFETY_DATE || SNAPSHOT_DATE >= TODAY))
   then
-    printf "Invalid Parent Snapshot: %s\n" ${PARENT}
+    >&2 printf "Error: Invalid Parent Snapshot: %s\n" ${PARENT}
     exit 1
   fi
   printf "Found Parent Snapshot '%s' for Current Snapshot '%s'\n" ${PARENT} ${CURRENT}
@@ -112,7 +100,7 @@ run_timeshift() {
   local BACKUP_PARENT_PATH="${BACKUP_TARGET}/${PARENT}" 
   if [ ! -d "${BACKUP_PARENT_PATH}" ]
   then
-    printf "Failed to find parent backup: %s\n" ${BACKUP_PARENT_PATH}
+    >&2 printf "Error: Failed to find parent backup: %s\n" ${BACKUP_PARENT_PATH}
     exit 1
   fi
 
@@ -128,6 +116,7 @@ run_timeshift() {
 run_timeshift "@"
 run_timeshift "@home"
 
-btrfs filesystem sync ${ARTIX_TARGET}
+printf "Syncing File Systems...\n"
+btrfs filesystem sync ${SOURCE_TARGET}
 btrfs filesystem sync ${BACKUP_TARGET}
 

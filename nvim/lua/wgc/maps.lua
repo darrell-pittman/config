@@ -1,4 +1,4 @@
--- Map the leader key
+--Map the leader key
 vim.api.nvim_set_keymap('n','<Space>', '',{})
 vim.g.mapleader = ' '
 vim.g.maplocalleader = "'"
@@ -6,18 +6,26 @@ vim.g.maplocalleader = "'"
 local utils = require('wgc.utils')
 local t = utils.t
 
-local map = utils.make_mapper { silent = true} 
-local cmd_map = utils.make_mapper()
+local map = utils.make_mapper { silent = true }
+local cmd_prompt_map = utils.make_mapper()
 
--- Use jk for escape in insert mode 
-map('i','jk','<Esc>')
+map('i','jk','<Esc>')                            --use jk for escape in insert mode 
 
--- <leader>u to uppercase word
-map('n', '<leader>u', 'gUiw')
+--Leader Mappings
+map('n', '<leader>u', 'gUiw')                    --uppercase word
+map('n', '<leader>x', '<cmd>Lex 20<CR>')         --Open Left Explorer
+cmd_prompt_map('n', '<leader>f', ':find<space>') --Start find in command window
+map('n', '<leader>p', '"0p')                     --Paste last thing not deleted
+map('n', '<leader>P', '"0P')                     --       "
+map('n', '<leader>w', '<cmd>up<CR>')             --Write only if buffer changed
+map('n', '<leader>m', '<C-W>_<C-W>|')           --Maximize current window
 
-cmd_map('n', '<leader>f', ':find<space>')
+--Misc
+cmd_prompt_map('', ';', ':')                     --Switch : and ;
+map('', ':', ';')                                --       "
+map('n', 'q;', 'q:')                             --       "
 
--- Turn off arrow keys
+--Turn off arrow keys
 map('', '<left>','')
 map('', '<right>','')
 map('', '<up>','')
@@ -27,26 +35,20 @@ map('i', '<right>','')
 map('i', '<up>','')
 map('i', '<down>','')
 
--- Completion
+--Windows
 
-_G.wgc_smart_tab = function ()
-  if vim.fn.pumvisible() == 1 then
-    return t'<C-n>'
-  else
-    local col = vim.fn.col('.') - 1
-    local backspace = (col == 0) or (vim.fn.getline('.'):sub(col,col):match('%s'))
-    if backspace then
-      return t'<Tab>'
-    else
-      return t'<C-x><C-o>'
-    end
-  end
-end
+--Navigation
+map('n', '<C-h>', '<C-w>h')
+map('n', '<C-j>', '<C-w>j')
+map('n', '<C-k>', '<C-w>k')
+map('n', '<C-l>', '<C-w>l')
 
-local completion_map = utils.make_mapper { expr =  true }
-completion_map('i', '<Tab>', 'v:lua.wgc_smart_tab()')
-
+--Resizing
+map('n', '<C-Up>', '<cmd>resize +2<CR>')
+map('n', '<C-Down>', '<cmd>resize -2<CR>')
+map('n', '<C-Right>', '<cmd>vertical resize +2<CR>')
+map('n', '<C-Left>', '<cmd>vertical resize -2<CR>')
 
 vim.cmd[[
-map <F4> :execute "vimgrep /" . expand("<cword>") . "/j **" <Bar> cw<CR>
+map <F4> <cmd>execute "vimgrep /" . expand("<cword>") . "/j **" <Bar> cw<CR>
 ]]

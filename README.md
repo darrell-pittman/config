@@ -1,2 +1,2 @@
-# guix
-guix config
+# Config
+My configs

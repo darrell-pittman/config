@@ -1,17 +1,40 @@
-local utils = {}
+local M = {}
 
-utils.home = (function()
-  local home = vim.env.HOME
-  return function()
-    return home
-  end
-end)()
+local protect = function(tbl)
+  return setmetatable({}, {
+    __index = tbl,
+    __newindex = function(t,k,v)
+      error(string.format("Attempting to change constant '%s' to %s",k,v))
+    end
+  })
+end
 
-utils.t = function(str)
+M.constants = protect({
+  HOME = vim.env.HOME,
+})
+
+M.string = {
+  is_empty = function(s)
+    return (not s) or (string.len(s) == 0)
+  end,
+  empty_val = function(s,v)
+    return M.string.is_empty(s) and v or s
+  end,
+}
+
+M.table = {
+  protect = protect,
+  merge = function(tbl1, tbl2)
+    for k,v in pairs(tbl2) do tbl1[k] = v end
+  end,
+}
+
+
+M.t = function(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
 end
 
-utils.make_mapper = function(key)
+M.make_mapper = function(key)
   local options = { noremap = true }
 
   if key then
@@ -23,25 +46,19 @@ utils.make_mapper = function(key)
   local buffer = options.buffer
   options.buffer = nil
 
-  if buffer then
-    return function(bufnr, mode, lhs, rhs)
-      vim.api.nvim_buf_set_keymap(
-      bufnr,
+  local map_fn = buffer and vim.api.nvim_buf_set_keymap or vim.api.nvim_set_keymap
+
+  return function(mode, lhs, rhs)
+    local args = {
       mode,
       lhs,
       rhs,
-      options
-      )
+      options,
+    }
+    if buffer then
+      table.insert(args, 1, buffer)
     end
-  else
-    return function(mode, lhs, rhs)
-      vim.api.nvim_set_keymap(
-      mode,
-      lhs,
-      rhs,
-      options
-      )
-    end
+    map_fn(unpack(args))
   end
 end
 
@@ -68,13 +85,12 @@ local option_setters = {
   end,
 }
 
-utils.options = {
+M.options = {
   set = set_options(option_setters.set),
   append = set_options(option_setters.append),
   prepend = set_options(option_setters.prepend),
   remove = set_options(option_setters.remove),
 }
 
-return utils
-
+return M
 

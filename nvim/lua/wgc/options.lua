@@ -1,3 +1,4 @@
+
 local utils = require('wgc.utils')
 
 utils.options.set({
@@ -9,20 +10,25 @@ utils.options.set({
   background = 'dark',
   termguicolors = false,
   syntax = 'on',
-  directory = utils.home()..'/backups/vim/swapfiles//',
-  backupdir = utils.home()..'/backups/vim/backup_files//',
+  directory = utils.constants.HOME..'/backups/vim/swapfiles//',
+  backupdir = utils.constants.HOME..'/backups/vim/backup_files//',
   undofile = false,
   colorcolumn = '80',
-  completeopt = 'longest,menuone',--,noinsert,noselect',
+  completeopt = 'menu,menuone,noselect',
   hlsearch = false,
-  listchars = { tab = '>-', lead = '.', trail = '.' },
+  --listchars = { tab = '>-', lead = ' ', trail = '.' },
+  listchars = { tab = '>-', trail = '.' },
+  list = true,
   autoindent = true,
   smartindent = true,
-  signcolumn = 'yes',
+  signcolumn = 'number',
   wrap = false,
   number = true,
   relativenumber = true,
-  numberwidth = 3,
+  numberwidth = 2,
+  laststatus = 3,
+  statusline = "%!v:lua.require('wgc.status_line').status_line()",
+  showmode = false,
 })
 
 utils.options.append({

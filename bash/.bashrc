@@ -48,7 +48,7 @@ UNICODE_SUPPORT=`[ $RC -eq 0 ] && echo "Y" || echo "N"`
 unset test_unicode
 
 parse_git_branch() {
-     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+  git branch 2> /dev/null | sed -n 's/^*[[:blank:]]\+\([^[:blank:]]\+\).*$/ (\1)/p'
 }
 
 display_user() {
@@ -108,3 +108,9 @@ fi
 fastfetch --logo-color-1 blue
 
 . "$HOME/.cargo/env"
+
+if [ -f "${HOME}/.config/lua/init.lua" ]
+then
+  export LUA_INIT="@${HOME}/.config/lua/init.lua"
+fi
+

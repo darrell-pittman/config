@@ -1,12 +1,21 @@
 #! /usr/bin/env bash
 
+set -euf -o pipefail
+
+SCRIPT_DIR=$(cd -- $(dirname -- "${BASH_SOURCE[0]}")>/dev/null && pwd)
+
 UUID="${1}"
 
 if [ -z "${UUID}" ]
 then
-  printf "Error: UUID argument required\n"
+  >&2 printf "Error: UUID argument required\n"
   exit 2
 fi
 
-lsblk -lnp -o name,uuid|sed -n '/'"${UUID}"'/s/^\([^[:blank:]]\+\)[[:blank:]]\+.*$/\1/p'
+${SCRIPT_DIR}/check_blk -q "${UUID}"
+
+lsblk -lnp -o name,uuid \
+  | grep "${UUID}$" \
+  | awk '{print $1}'
+
 

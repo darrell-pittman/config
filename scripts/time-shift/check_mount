@@ -1,0 +1,45 @@
+#! /bin/sh
+
+SCRIPT_DIR=$(cd -- $(dirname -- "${BASH_SOURCE[0]}")>/dev/null && pwd)
+
+DEVICE=$1
+TARGET=$2
+UUID=$3
+
+if ! ${SCRIPT_DIR}/check_blk -q $UUID
+then
+  exit 1
+fi
+
+awk -v device="${DEVICE}" \
+    -v uuid="${UUID}" \
+    -v target="${TARGET}" \
+    -f- <(findmnt -nl -o TARGET,SOURCE,UUID) <<'EOF'
+{if ($2 == device && $3 == uuid) {
+  if ($1 == target) {
+    exit 2
+  } else {
+    exit 1
+  }
+  exit 0
+}}
+EOF
+
+RESULT=$?
+
+if ((RESULT==1))
+then
+  >&2 printf "Error: '%s' is already mounted elsewhere.\n" ${DEVICE}
+elif ((RESULT==2))
+then
+  >&2 printf "%s(%s) already mounted at %s\n" ${DEVICE} ${UUID} ${TARGET}
+  printf "FALSE\n"
+  RESULT=0
+else
+  >&2 printf "Mounting %s(%s) to %s\n" ${DEVICE} ${UUID} ${TARGET}
+  mount -U ${UUID} ${TARGET}
+  printf "TRUE\n"
+fi
+
+exit $RESULT
+

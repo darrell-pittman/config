@@ -1,5 +1,6 @@
 require('wgc.plugins')
-require('wgc.lsp')
 require('wgc.maps')
 require('wgc.options')
+require('wgc.lsp')
 require('wgc.colors')
+require('wgc.completion')
