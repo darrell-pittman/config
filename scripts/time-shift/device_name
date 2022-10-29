@@ -1,0 +1,12 @@
+#! /usr/bin/env bash
+
+UUID="${1}"
+
+if [ -z "${UUID}" ]
+then
+  printf "Error: UUID argument required\n"
+  exit 2
+fi
+
+lsblk -lnp -o name,uuid|sed -n '/'"${UUID}"'/s/^\([^[:blank:]]\+\)[[:blank:]]\+.*$/\1/p'
+

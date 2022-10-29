@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Link this file to <user-runsvdir>/pipewired/log/run
+exec svlogd -tt /var/log/runit/user/pipewired

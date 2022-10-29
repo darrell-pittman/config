@@ -1,0 +1,10 @@
+(specifications->manifest
+  '("libx11"
+    "cmake"
+    "subversion"
+    "libxxf86vm"
+    "libxcursor"
+    "libxi"
+    "libxrandr"
+    "libxinerama"
+    "glew"))

@@ -1,0 +1,5 @@
+# link this file in /etc/swap_caps_lock_control.kmap
+# then load it in vconcole.conf
+
+keymaps 0-2,4-5,8,12
+keycode  58 = Control

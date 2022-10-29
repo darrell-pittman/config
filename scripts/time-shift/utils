@@ -1,0 +1,33 @@
+# Some util functions
+# This file should be sourced (it is not executable)
+
+# Mounts device identified by uuid at target
+# Returns:
+#   0 : if this function mounts the device
+#   3 : if device already mounted at target
+#
+#This function will exit script with 1 if the call to mount fails
+
+check_mount(){
+  TARGET=$1
+  DEVICE=$2
+  UUID=$3
+
+  RETURN=0
+  if findmnt -ln -o TARGET,SOURCE,UUID |awk \
+    -v target="${TARGET}" \
+    -v device="${DEVICE}" \
+    -v uuid="${UUID}" \
+    '{if ($1==target && $2==device && $3==uuid) {exit 0}} ENDFILE { exit -1 }'
+    then
+      printf "%s already mounted on %s\n" ${DEVICE} ${TARGET}
+      RETURN=3
+    else
+      printf "Mounting %s at %s\n" ${DEVICE} ${TARGET}
+      if ! mount -U ${UUID} ${TARGET}
+      then
+        exit 1
+      fi
+  fi
+  return ${RETURN}
+}

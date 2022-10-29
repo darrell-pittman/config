@@ -1,0 +1,7 @@
+#!/bin/sh
+
+pkill -x -9 pipewire
+exec 1>/dev/null 
+exec 2>&1
+exec pipewire &
+

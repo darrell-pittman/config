@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Make sure sway is running
+[ -n "$(pidof waybar)" ] || exit 1
+
+# This env file is created in sway/config
+SERVICE_ENV_FILE=$HOME/tmp/service_env/env
+
+if [ -f $SERVICE_ENV_FILE ]
+then
+  exec 2>&1
+  exec env $(cat $SERVICE_ENV_FILE|xargs) gammastep
+fi
+

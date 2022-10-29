@@ -1,0 +1,5 @@
+require('wgc.plugins')
+require('wgc.lsp')
+require('wgc.maps')
+require('wgc.options')
+require('wgc.colors')

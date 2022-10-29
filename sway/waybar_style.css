@@ -1,0 +1,71 @@
+* {
+    font-size: 15px;
+}
+
+window#waybar {
+  background: transparent;
+}
+
+window#waybar box{
+    border: none;
+}
+
+.modules-center label{
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#workspaces button {
+    /*background-color: #76d4e9;*/
+    background: transparent;
+    font-family: Font Awesome Free;
+    margin: 2px 0px 2px 4px;
+    border: 2px solid #888;
+    color: white;
+    padding: 0px 3px;
+    border-radius: 5px;
+}
+
+#workspaces button.focused {
+    background:transparent;
+    border-color: white;
+}
+
+#workspaces button label {
+    background: transparent;
+    font-family: Fira Code Retina;
+}
+
+.modules-right label {
+    color: white;
+    background: transparent;
+    margin: 2px 4px 2px 0px;
+    padding: 1px 5px;
+    border-radius: 5px;
+    border: 1px solid #888;
+}
+
+#cpu {min-width: 60px;}
+#cpu.low {color: white;}
+#cpu.medium {color: yellow;}
+#cpu.high {color:red;}
+
+#battery { min-width: 75px;}
+#battery.good {color: white;}
+#battery.warning {color: yellow;}
+#battery.critical {color: red;}
+
+#memory.low {color: #eee;}
+#memory.medium {color: yellow;}
+#memory.high {color: red;}
+
+#mode {
+    background-color: lightpink;
+    border-left: 6px solid #888;
+    border-right: 6px solid #888;
+    padding: 0px 5px;
+    margin-left: 10px;
+    font-size: 18px;
+    color: darkviolet;
+}

@@ -1,0 +1,133 @@
+#! /usr/bin/env bash
+
+SCRIPT_DIR=$(cd -- $(dirname -- "${BASH_SOURCE[0]}")>/dev/null && pwd)
+
+source ${SCRIPT_DIR}/utils
+source ${SCRIPT_DIR}/consts
+
+TODAY=$(date +%Y%m%d)
+
+# Check that required block devices exist
+if ! ${SCRIPT_DIR}/check_blk "${ARTIX_UUID}" "${BACKUP_UUID}"
+then
+  exit 1
+fi
+
+ARTIX_DEVICE=$(${SCRIPT_DIR}/device_name ${ARTIX_UUID})
+printf "Artix Device Name: %s\n" ${ARTIX_DEVICE}
+
+BACKUP_DEVICE=$(${SCRIPT_DIR}/device_name ${BACKUP_UUID})
+printf "Backup Device Name: %s\n" ${BACKUP_DEVICE}
+
+UNMOUNT_ARTIX=true
+UNMOUNT_BACKUP=true
+
+if ! check_mount ${ARTIX_TARGET} ${ARTIX_DEVICE} ${ARTIX_UUID} 
+then
+  UNMOUNT_ARTIX=false
+fi
+
+if ! check_mount ${BACKUP_TARGET} ${BACKUP_DEVICE} ${BACKUP_UUID} 
+then
+  UNMOUNT_BACKUP=false
+fi
+
+trap_exit() {
+  if ${UNMOUNT_ARTIX}
+  then
+    printf "Unmounting %s\n" "${ARTIX_TARGET}"
+    umount ${ARTIX_TARGET}
+  fi
+
+  if ${UNMOUNT_BACKUP}
+  then
+    printf "Unmounting %s\n" "${BACKUP_TARGET}"
+    umount ${BACKUP_TARGET}
+  fi
+}
+
+trap trap_exit EXIT
+
+run_timeshift() {
+  local SUBVOL="${1:-ng_subvol}"
+  local SUBVOL_OK=false
+
+  for valid_subvol in "${VALID_SUBVOLS[@]}"
+  do
+    if [ "${SUBVOL}" == "${valid_subvol}" ]
+    then
+      SUBVOL_OK=true
+      break
+    fi
+  done
+
+  if ! ${SUBVOL_OK} 
+  then
+    printf "Invalid Subvol: %s\n" ${SUBVOL}
+    return -1
+  fi
+
+  printf "Running timeshift for subvolume '%s'\n" ${SUBVOL}
+  local CURRENT=${SUBVOL}_${TODAY}
+  local CURRENT_PATH="${ARTIX_TARGET}/${CURRENT}"
+  local BACKUP_CURRENT_PATH="${BACKUP_TARGET}/${CURRENT}" 
+
+  if [ ! -d "${CURRENT_PATH}" ]
+  then
+    btrfs subvolume snapshot -r "${ARTIX_TARGET}/${SUBVOL}" "${CURRENT_PATH}"
+  else
+    if [ ! -d "${BACKUP_CURRENT_PATH}" ]
+    then
+      printf "Error: Failed to find current backup.\n"
+      exit 1
+    fi
+    printf "Current Snapshot and Backup aleady exists for subvolume '%s'\n" ${SUBVOL}
+    return 0
+  fi
+
+  
+  local SNAPSHOTDATE_UNSAFE=$(\ls ${ARTIX_TARGET} \
+    | sed -n -e "/^${CURRENT}$/d" \
+             -e "s/^${SUBVOL}_\([[:digit:]]\{8\}\)$/\1/p" \
+    | sort -r \
+    | head -1)
+
+  local SNAPSHOT_DATE=${SNAPSHOTDATE_UNSAFE:-0}
+  local PARENT="${SUBVOL}_${SNAPSHOT_DATE}"
+  local PARENT_PATH="${ARTIX_TARGET}/${PARENT}"
+
+  if ((SNAPSHOT_DATE < SAFETY_DATE || SNAPSHOT_DATE >= TODAY))
+  then
+    printf "Invalid Parent Snapshot: %s\n" ${PARENT}
+    exit 1
+  fi
+  printf "Found Parent Snapshot '%s' for Current Snapshot '%s'\n" ${PARENT} ${CURRENT}
+
+  if [ -d "${BACKUP_CURRENT_PATH}" ]
+  then
+    printf "Backup already exists: '%s'\n" ${BACKUP_CURRENT_PATH}
+    return 0
+  fi
+
+  local BACKUP_PARENT_PATH="${BACKUP_TARGET}/${PARENT}" 
+  if [ ! -d "${BACKUP_PARENT_PATH}" ]
+  then
+    printf "Failed to find parent backup: %s\n" ${BACKUP_PARENT_PATH}
+    exit 1
+  fi
+
+  if btrfs send -p ${PARENT_PATH} ${CURRENT_PATH} | btrfs receive ${BACKUP_TARGET}
+  then
+    if [[ -d "${CURRENT_PATH}" && -d "${BACKUP_TARGET}/${CURRENT}" ]]
+    then
+      btrfs subvolume delete -c ${PARENT_PATH}
+    fi
+  fi
+}
+
+run_timeshift "@"
+run_timeshift "@home"
+
+btrfs filesystem sync ${ARTIX_TARGET}
+btrfs filesystem sync ${BACKUP_TARGET}
+

@@ -1,0 +1,7 @@
+vim.cmd('colorscheme murphy')
+vim.cmd('highlight ColorColumn ctermbg=236')
+vim.cmd('highlight MatchParen ctermbg=28')
+vim.cmd('highlight Pmenu ctermbg=36 ctermfg=15')
+vim.cmd('highlight PmenuSel cterm=underdotted ctermbg=85 ctermfg=0')
+vim.cmd('highlight StatusLine ctermbg=251 ctermfg=0')
+vim.cmd('highlight StatusLineNC ctermbg=246 ctermfg=15')
