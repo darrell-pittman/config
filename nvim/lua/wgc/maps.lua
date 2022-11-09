@@ -18,7 +18,8 @@ cmd_prompt_map('n', '<leader>f', ':find<space>') --Start find in command window
 map('n', '<leader>p', '"0p')                     --Paste last thing not deleted
 map('n', '<leader>P', '"0P')                     --       "
 map('n', '<leader>w', '<cmd>up<CR>')             --Write only if buffer changed
-map('n', '<leader>m', '<C-W>_<C-W>|')           --Maximize current window
+map('n', '<leader>m', '<C-W>_<C-W>|')            --Maximize current window
+cmd_prompt_map('n', '<leader><leader>x', ':source %<CR>')
 
 --Misc
 cmd_prompt_map('', ';', ':')                     --Switch : and ;
