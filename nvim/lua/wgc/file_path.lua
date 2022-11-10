@@ -8,7 +8,12 @@ local constants = utils.table.protect {
 }
 
 local M = {[constants.TYPE] = constants.TYPE}
+
 M.__index = M
+
+M.__eq = function(fp1, fp2)
+  return fp1.path == fp2.path
+end
 
 local regexes = utils.table.protect {
   FILE_NAME = ("[^%s]+"):format(constants.SEP),
