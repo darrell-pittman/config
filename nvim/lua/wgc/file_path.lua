@@ -19,7 +19,6 @@ local regexes = utils.table.protect {
   FILE_NAME = ("[^%s]+"):format(constants.SEP),
   PARENT = ("^(%s?.+)%s.*$"):format(constants.SEP, constants.SEP),
   ROOT = ("^(%s?)[^%s]+$"):format(constants.SEP, constants.SEP),
-  TRIM = "^%s*(.*)%s*$",
   TRIM_SEP = ("^(.+)%s$"):format(constants.SEP),
 }
 
@@ -65,12 +64,27 @@ function M:new(path)
   end
 
   --trim whitespace
-  path = path:match(regexes.TRIM)
+  path = utils.string.trim(path)
 
   --trim trailing /
   path = path:match(regexes.TRIM_SEP) or path
 
   return setmetatable({path = path},self)
+end
+
+local function fs_stat_async(path, callback)
+  vim.loop.fs_open(path, "r", 438, function(err, fd)
+    assert(not err, err)
+    vim.loop.fs_fstat(fd, function(err, stat)
+      assert(not err, err)
+      callback(fd, stat, function(after_close)
+        vim.loop.fs_close(fd, function(err)
+          assert(not err, err)
+          after_close()
+        end)
+      end)
+    end)
+  end)
 end
 
 function M:parent()
@@ -97,15 +111,15 @@ function M:is_file()
   return stat and stat.type == constants.FILE_TYPE
 end
 
-function M:search_dir(dirname)
+function M:search_up(name)
   local path = self
-  if verify(dirname) and not dirname:is_absolute() then
+  if verify(name) and not name:is_absolute() then
     if path:is_file() then
       path = path:parent()
     end
     repeat
-      local dir = path..dirname
-      if dir:is_directory() then
+      local dir = path..name
+      if dir:exists() then
         return dir
       end
       path = path:parent()
@@ -114,13 +128,36 @@ function M:search_dir(dirname)
 end
 
 function M:read()
-  if self:is_file() then
-    local f = io.open(self.path)
-    local data = f:read()
-    f.close()
-    return data
-  end
+  local fd = assert(vim.loop.fs_open(self.path, "r", 438))
+  local stat = assert(vim.loop.fs_fstat(fd))
+  local data = assert(vim.loop.fs_read(fd, stat.size, 0))
+  assert(vim.loop.fs_close(fd))
+  return data
 end
+
+function M:read_async(callback)
+  fs_stat_async(self.path, function(fd, stat, close_callback)
+    vim.loop.fs_read(fd, stat.size, 0, function(err, data)
+      assert(not err, err)
+      close_callback(function()
+        callback(data)
+      end)
+    end)
+  end)
+  --vim.loop.fs_open(self.path, "r", 438, function(err, fd)
+    --  assert(not err, err)
+    --  vim.loop.fs_fstat(fd, function(err, stat)
+    --    assert(not err, err)
+    --    vim.loop.fs_read(fd, stat.size, 0, function(err, data)
+    --      assert(not err, err)
+    --      vim.loop.fs_close(fd, function(err)
+    --        assert(not err, err)
+    --        return callback(data)
+    --      end)
+    --    end)
+    --  end)
+    --end)
+  end
 
 return M
 

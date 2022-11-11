@@ -11,6 +11,7 @@ end
 
 M.constants = protect({
   HOME = vim.env.HOME,
+  TRIM = "^[%s%c\n]*(.*[^%s%c\n])[%s%c\n]*$",
 })
 
 M.string = {
@@ -19,6 +20,9 @@ M.string = {
   end,
   empty_val = function(s,v)
     return M.string.is_empty(s) and v or s
+  end,
+  trim = function(s)
+    return s:match(M.constants.TRIM)
   end,
 }
 
@@ -91,6 +95,7 @@ M.options = {
   prepend = set_options(option_setters.prepend),
   remove = set_options(option_setters.remove),
 }
+
 
 return M
 
