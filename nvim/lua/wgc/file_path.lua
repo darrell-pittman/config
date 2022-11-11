@@ -36,9 +36,8 @@ local function concat(fp1, fp2)
       error("fp2 must be relative")
     end
     return M:new(fp1.path..constants.SEP..fp2.path)
-
   else
-    error("Args must be file_paths.")
+    error("Error: file_path can only concat another file_path")
   end
 end
 
@@ -72,21 +71,6 @@ function M:new(path)
   return setmetatable({path = path},self)
 end
 
-local function fs_stat_async(path, callback)
-  vim.loop.fs_open(path, "r", 438, function(err, fd)
-    assert(not err, err)
-    vim.loop.fs_fstat(fd, function(err, stat)
-      assert(not err, err)
-      callback(fd, stat, function(after_close)
-        vim.loop.fs_close(fd, function(err)
-          assert(not err, err)
-          after_close()
-        end)
-      end)
-    end)
-  end)
-end
-
 function M:parent()
   local new_path = self.path:match(regexes.PARENT)
   new_path = new_path or self.path:match(regexes.ROOT)
@@ -97,67 +81,74 @@ function M:is_absolute()
   return self.path:sub(1,1) == constants.SEP
 end
 
-function M:exists()
-  return vim.loop.fs_stat(self.path) and true
-end
-
-function M:is_directory()
-  local stat = vim.loop.fs_stat(self.path)
-  return stat and stat.type == constants.DIR_TYPE
-end
-
-function M:is_file()
-  local stat = vim.loop.fs_stat(self.path)
-  return stat and stat.type == constants.FILE_TYPE
-end
-
-function M:search_up(name)
-  local path = self
-  if verify(name) and not name:is_absolute() then
-    if path:is_file() then
-      path = path:parent()
+function M:exists(success, failure)
+  vim.loop.fs_stat(self.path, function(err, stat)
+    local ok = not err and stat
+    if ok then
+      success(stat)
+    else
+      failure(err)
     end
-    repeat
-      local dir = path..name
-      if dir:exists() then
-        return dir
+  end)
+end
+
+function M:is_directory(success, failure)
+  self:exists(function(stat)
+    if stat.type == constants.DIR_TYPE then
+      success()
+    else
+      failure()
+    end
+  end,
+  failure)
+end
+
+function M:is_file(success, failure)
+  self:exists(function(stat)
+    if stat.type == constants.FILE_TYPE then
+      success()
+    else
+      failure()
+    end
+  end,
+  failure)
+end
+
+function M:search_up(name, callback)
+  self:exists(function()
+    local needle = self..name
+    needle:exists(function()
+      callback(needle)
+    end,
+    function()
+      local path = self:parent()
+      if path then
+        path:search_up(name, callback)
+      else
+        callback()
       end
-      path = path:parent()
-    until not path
-  end
+    end)
+  end,
+  function(err)
+    error(err)
+  end)
 end
 
-function M:read()
-  local fd = assert(vim.loop.fs_open(self.path, "r", 438))
-  local stat = assert(vim.loop.fs_fstat(fd))
-  local data = assert(vim.loop.fs_read(fd, stat.size, 0))
-  assert(vim.loop.fs_close(fd))
-  return data
-end
-
-function M:read_async(callback)
-  fs_stat_async(self.path, function(fd, stat, close_callback)
-    vim.loop.fs_read(fd, stat.size, 0, function(err, data)
+function M:read(callback)
+  vim.loop.fs_open(self.path, "r", 438, function(err, fd)
+    assert(not err, err)
+    vim.loop.fs_fstat(fd, function(err, stat)
       assert(not err, err)
-      close_callback(function()
-        callback(data)
+      vim.loop.fs_read(fd, stat.size, 0, function(err, data)
+        assert(not err, err)
+        vim.loop.fs_close(fd, function(err)
+          assert(not err, err)
+          callback(data)
+        end)
       end)
     end)
   end)
-  --vim.loop.fs_open(self.path, "r", 438, function(err, fd)
-    --  assert(not err, err)
-    --  vim.loop.fs_fstat(fd, function(err, stat)
-    --    assert(not err, err)
-    --    vim.loop.fs_read(fd, stat.size, 0, function(err, data)
-    --      assert(not err, err)
-    --      vim.loop.fs_close(fd, function(err)
-    --        assert(not err, err)
-    --        return callback(data)
-    --      end)
-    --    end)
-    --  end)
-    --end)
-  end
+end
 
 return M
 
