@@ -1,7 +1,7 @@
 utils = require('wgc.utils')
 
 local constants = utils.table.protect {
-  SEP = "/",
+  SEP = package.config:sub(1,1),
   TYPE = "__WGC__FP__",
   DIR_TYPE = "directory",
   FILE_TYPE = "file",
@@ -16,10 +16,12 @@ M.__eq = function(fp1, fp2)
 end
 
 local regexes = utils.table.protect {
-  FILE_NAME = ("[^%s]+"):format(constants.SEP),
-  PARENT = ("^(%s?.+)%s.*$"):format(constants.SEP, constants.SEP),
-  ROOT = ("^(%s?)[^%s]+$"):format(constants.SEP, constants.SEP),
   TRIM_SEP = ("^(.+)%s$"):format(constants.SEP),
+  SPLIT_PATH = ("([^%s]+)"):format(constants.SEP),
+  ROOTS = {
+    constants.SEP == "/" and ("^(%s)"):format(constants.SEP) or ("^([A-Za-z]:%s)"):format(constants.SEP),
+    constants.SEP == "\\" and ("^(%s%s)"):format(constants.SEP, constants.SEP),
+  },
 }
 
 local function verify(...)
@@ -35,28 +37,42 @@ local function concat(fp1, fp2)
     if fp2:is_absolute() then
       error("fp2 must be relative")
     end
-    return M:new(fp1.path..constants.SEP..fp2.path)
+    return M:new(utils.table.append({},fp1.path,fp2.path), fp1.root)
   else
     error("Error: file_path can only concat another file_path")
   end
 end
 
 M.__tostring = function(fp)
-  return fp.path
+  return (fp.root or "")..table.concat(fp.path, constants.SEP)
 end
 
 M.__add = concat
 
 M.__concat = concat
 
-function M:new(path)
+local function parse_root(str_path)
+  local root
+  for _,regex in ipairs(regexes.ROOTS) do
+    if regex then
+      root = str_path:match(regex)
+    end
+    if root then break end
+  end
+  return root
+end
+
+function M:is_absolute()
+  return self.root and true
+end
+
+function M:new(path, root)
   local path_type = type(path)
 
   if path_type == "table" then
     if verify(path) then
+      root = path.root
       path = path.path
-    else
-      error("Invalid path")
     end
   elseif path_type == "string" then
     --trim whitespace
@@ -64,25 +80,28 @@ function M:new(path)
 
     --trim trailing /
     path = path:match(regexes.TRIM_SEP) or path
+
+    root = parse_root(path)
+    if root then
+      path = path:sub(#root,#path)
+    end
+    path = utils.string.split(path, regexes.SPLIT_PATH)
   else
     error("Invalid path")
   end
 
-  return setmetatable({path = path},self)
+  return setmetatable({path = path, root = root},self)
 end
 
 function M:parent()
-  local new_path = self.path:match(regexes.PARENT)
-  new_path = new_path or self.path:match(regexes.ROOT)
-  return new_path and #new_path > 0 and M:new(new_path) or nil
-end
-
-function M:is_absolute()
-  return self.path:sub(1,1) == constants.SEP
+  local _, parent = utils.table.pop(self.path)
+  if parent then
+    return M:new(parent, self.root)
+  end
 end
 
 function M:exists(success, failure)
-  vim.loop.fs_stat(self.path, function(err, stat)
+  vim.loop.fs_stat(tostring(self), function(err, stat)
     local ok = not err and stat
     if ok then
       success(stat)
@@ -135,7 +154,7 @@ function M:search_up(name, callback)
 end
 
 function M:read(callback)
-  vim.loop.fs_open(self.path, "r", 438, function(err, fd)
+  vim.loop.fs_open(tostring(self), "r", 438, function(err, fd)
     assert(not err, err)
     vim.loop.fs_fstat(fd, function(err, stat)
       assert(not err, err)
@@ -151,5 +170,4 @@ function M:read(callback)
 end
 
 return M
-
 

@@ -26,7 +26,7 @@ local function parse_branch(HEAD)
     HEAD:read(function(data)
       local branch = data:match(constants.BRANCH_REGEX) or data:sub(1,6)
       if branch then
-        file_watch:start(HEAD.path, {}, vim.schedule_wrap(function()
+        file_watch:start(tostring(HEAD), {}, vim.schedule_wrap(function()
           parse_branch(HEAD)
         end))
         current_branch = branch

@@ -1,5 +1,7 @@
 local M = {}
 
+local unpack = table.unpack or unpack
+
 local protect = function(tbl)
   return setmetatable({}, {
     __index = tbl,
@@ -24,15 +26,44 @@ M.string = {
   trim = function(s)
     return s:match(M.constants.TRIM)
   end,
-}
-
-M.table = {
-  protect = protect,
-  merge = function(tbl1, tbl2)
-    for k,v in pairs(tbl2) do tbl1[k] = v end
+  split = function(s,r)
+    local vals = {}
+    for val in string.gmatch(s,r) do
+      table.insert(vals, val)
+    end
+    return vals
   end,
 }
 
+local function slice(tbl, start, _end)
+  return {unpack(tbl, start,_end)}
+end
+
+local function pop(tbl)
+  if not tbl then return end
+  if #tbl > 0 then
+    local popped = tbl[#tbl]
+    return popped, slice(tbl,1,#tbl -1)
+  end
+end
+
+M.table = {
+  protect = protect,
+  slice = slice,
+  pop = pop,
+  append = function(tbl1, ...)
+    local tbls = {...}
+    if tbls and #tbls > 0 then
+      local tbl = tbls[1]
+      tbls = M.table.slice(tbls, 2,#tbls)
+      for _,v in ipairs(tbl) do
+        table.insert(tbl1, v)
+      end
+      tbl1 = M.table.append(tbl1,unpack(tbls))
+    end
+    return tbl1
+  end,
+}
 
 M.t = function(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
@@ -95,7 +126,6 @@ M.options = {
   prepend = set_options(option_setters.prepend),
   remove = set_options(option_setters.remove),
 }
-
 
 return M
 
