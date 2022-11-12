@@ -58,15 +58,15 @@ function M:new(path)
     else
       error("Invalid path")
     end
-  elseif path_type ~= "string" then
-      error("Invalid path")
+  elseif path_type == "string" then
+    --trim whitespace
+    path = utils.string.trim(path)
+
+    --trim trailing /
+    path = path:match(regexes.TRIM_SEP) or path
+  else
+    error("Invalid path")
   end
-
-  --trim whitespace
-  path = utils.string.trim(path)
-
-  --trim trailing /
-  path = path:match(regexes.TRIM_SEP) or path
 
   return setmetatable({path = path},self)
 end
