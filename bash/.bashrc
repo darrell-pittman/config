@@ -108,6 +108,7 @@ fi
 fastfetch --logo-color-1 blue
 
 . "$HOME/.cargo/env"
+. "$HOME/software/vulkan/1.3.231.1/setup-env.sh"
 
 if [ -f "${HOME}/.config/lua/init.lua" ]
 then
