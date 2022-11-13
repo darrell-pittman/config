@@ -12,7 +12,7 @@ local M = {[constants.TYPE] = constants.TYPE}
 M.__index = M
 
 M.__eq = function(fp1, fp2)
-  return fp1.path == fp2.path
+  return tostring(fp1) == tostring(fp2)
 end
 
 local regexes = utils.table.protect {
@@ -106,7 +106,7 @@ function M:exists(success, failure)
     if ok then
       success(stat)
     else
-      failure(err)
+      if failure then failure(err) end
     end
   end)
 end
@@ -116,7 +116,7 @@ function M:is_directory(success, failure)
     if stat.type == constants.DIR_TYPE then
       success()
     else
-      failure()
+      if failure then failure() end
     end
   end,
   failure)
@@ -127,7 +127,7 @@ function M:is_file(success, failure)
     if stat.type == constants.FILE_TYPE then
       success()
     else
-      failure()
+      if failure then failure() end
     end
   end,
   failure)
