@@ -147,9 +147,6 @@ function M:search_up(name, callback)
         callback()
       end
     end)
-  end,
-  function(err)
-    error(err)
   end)
 end
 
