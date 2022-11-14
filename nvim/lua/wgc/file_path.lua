@@ -22,6 +22,7 @@ local regexes = utils.table.protect {
     constants.SEP == "/" and ("^(%s)"):format(constants.SEP) or ("^([A-Za-z]:%s)"):format(constants.SEP),
     constants.SEP == "\\" and ("^(%s%s)"):format(constants.SEP, constants.SEP),
   },
+  EXTENSION = "^%.*.*%.([^%s]+)$",
 }
 
 local function verify(...)
@@ -97,6 +98,19 @@ function M:parent()
   local _, parent = utils.table.pop(self.path)
   if parent then
     return M:new(parent, self.root)
+  end
+end
+
+function M:name()
+  if #self.path > 0 then
+    return M:new(self.path[#self.path])
+  end
+end
+
+function M:extension()
+  local name = self:name()
+  if name then
+    return string.match(tostring(name), regexes.EXTENSION)
   end
 end
 

@@ -10,6 +10,7 @@ local map = utils.make_mapper { silent = true }
 local cmd_prompt_map = utils.make_mapper()
 
 map('i','jk','<Esc>')                            --use jk for escape in insert mode 
+map('t','jk','<C-\\><C-N>')                      --use jk for escape in terminal mode 
 
 --Leader Mappings
 map('n', '<leader>u', 'gUiw')                    --uppercase word

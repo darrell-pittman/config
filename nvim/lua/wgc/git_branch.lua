@@ -10,9 +10,10 @@ local constants = utils.table.protect {
   HEAD = file_path:new("HEAD"),
   BRANCH_REGEX = "^.*/([^/\n]+)[%s\n]*$",
   SUBMODULE_REGEX = "^gitdir:%s+([^\n]+)[%s\n]*$",
+  NOT_SET ="__WGC_NOT_SET__"
 }
 
-local current_branch
+local current_branch = constants.NOT_SET
 local current_git_dir
 local file_watch = vim.loop.new_fs_event()
 
@@ -90,7 +91,7 @@ local function handle_git_dir(git_dir)
   end
 end
 
-local function update_current_branch(info)
+M.update_current_branch = function(info)
   if not info or utils.string.is_empty(info.file) then return end
 
   local git_dir = buf_git_dir_cache:get(info.buf)
@@ -105,16 +106,16 @@ local function update_current_branch(info)
   end
 end
 
-local group = vim.api.nvim_create_augroup("WgcGitBranch", {
-  clear = true,
-})
-
-vim.api.nvim_create_autocmd("BufEnter", {
-  group = group,
-  callback = update_current_branch,
-})
-
 M.git_branch = function(bufno)
+  if current_branch == constants.NOT_SET then
+    current_branch = nil
+    bufno = bufno or 0
+    vim.schedule_wrap(function()
+     local file = vim.api.nvim_buf_get_name(bufno)
+      M.update_current_branch {buf=bufno, file=file}
+    end)()
+  end
+
   return current_branch
 end
 
