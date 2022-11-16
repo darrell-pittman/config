@@ -20,9 +20,9 @@ local file_watch = vim.loop.new_fs_event()
 local function set_branch(branch)
   if branch ~= current_branch then
     current_branch = branch
-    vim.schedule_wrap(function ()
+    vim.schedule(function ()
       vim.opt.statusline = vim.opt.statusline:get()
-    end)()
+    end)
   end
 end
 
@@ -110,10 +110,10 @@ M.git_branch = function(bufno)
   if current_branch == constants.NOT_SET then
     current_branch = nil
     bufno = bufno or 0
-    vim.schedule_wrap(function()
+    vim.schedule(function()
      local file = vim.api.nvim_buf_get_name(bufno)
       M.update_current_branch {buf=bufno, file=file}
-    end)()
+    end)
   end
 
   return current_branch

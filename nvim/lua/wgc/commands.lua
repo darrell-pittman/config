@@ -13,11 +13,9 @@ vim.api.nvim_create_autocmd("BufEnter", {
 local function run_love_project(file)
   file:search_up(file_path:new("main.lua"), vim.schedule_wrap(function(main_file)
     if main_file then
-      vim.fn.jobstart({
+      vim.fn.system({
         "love",
         tostring(main_file:parent())
-      },{
-        detach = false,
       })
     else
       print("Failed to find main.lua")
