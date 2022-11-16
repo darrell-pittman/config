@@ -24,7 +24,7 @@ local function run_love_project(file)
 end
 
 local function create_run_command(info)
-  file = file_path:new(info.file)
+  local file = file_path:new(info.file)
   local extension = file:extension()
   if extension == "lua" then
     vim.api.nvim_buf_create_user_command(info.buf, "WgcRun", function()
