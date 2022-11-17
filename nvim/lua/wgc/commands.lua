@@ -1,5 +1,5 @@
-local file_path = require('wgc.file_path')
-local utils = require('wgc.utils')
+local file_path = require('wgc-nvim-utils').file_path
+local utils = require('wgc-nvim-utils').utils
 
 local branch_group = vim.api.nvim_create_augroup("WgcGitBranch", {
   clear = true,

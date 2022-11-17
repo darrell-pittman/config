@@ -1,8 +1,8 @@
 local M = {}
 
-local utils = require('wgc.utils')
-local file_path = require('wgc.file_path')
-local cache, cache_constants = require('wgc.cache')()
+local utils = require('wgc-nvim-utils').utils
+local file_path = require('wgc-nvim-utils').file_path
+local cache, cache_constants = require('wgc-nvim-utils').cache()
 local buf_git_dir_cache = cache:new()
 
 local constants = utils.table.protect {

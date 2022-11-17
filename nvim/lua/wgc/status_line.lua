@@ -1,4 +1,4 @@
-local utils = require('wgc.utils')
+local utils = require('wgc-nvim-utils').utils
 local git_branch = require('wgc.git_branch').git_branch
 
 local M = {}

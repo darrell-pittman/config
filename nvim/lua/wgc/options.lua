@@ -1,5 +1,4 @@
-
-local utils = require('wgc.utils')
+local utils = require('wgc-nvim-utils').utils
 
 utils.options.set({
   tabstop = 2,
@@ -16,7 +15,6 @@ utils.options.set({
   colorcolumn = '80',
   completeopt = 'menu,menuone,noselect',
   hlsearch = false,
-  --listchars = { tab = '>-', lead = ' ', trail = '.' },
   listchars = { tab = '>-', trail = '.' },
   list = true,
   autoindent = true,

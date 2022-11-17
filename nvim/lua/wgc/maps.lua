@@ -3,7 +3,7 @@ vim.api.nvim_set_keymap('n','<Space>', '',{})
 vim.g.mapleader = ' '
 vim.g.maplocalleader = "'"
 
-local utils = require('wgc.utils')
+local utils = require('wgc-nvim-utils').utils
 local t = utils.t
 
 local map = utils.make_mapper { silent = true }

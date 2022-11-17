@@ -1,4 +1,4 @@
-local utils = require('wgc.utils')
+local utils = require('wgc-nvim-utils').utils
 
 local gmap = utils.make_mapper {silent = true} 
 
