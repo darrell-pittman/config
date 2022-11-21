@@ -24,6 +24,8 @@ local function run_love_project(file)
 end
 
 local function create_run_command(info)
+  local map = require'wgc-nvim-utils'.utils.make_mapper({buffer=info.buf, silent=true})
+  map('n', '<leader>r', ':WgcRun<cr>')
   local file = file_path:new(info.file)
   local extension = file:extension()
   if extension == "lua" then
