@@ -34,15 +34,25 @@ local function open_window(callback)
   ' nolist noswapfile nowrap nospell nonumber norelativenumber'..
   ' nofoldenable signcolumn=no')
 
-  local map = utils.make_mapper({buffer=disp.buf, silent=true})
+  local map = utils.make_mapper({
+    buffer=disp.buf,
+    silent=true,
+    nowait=true,
+  })
   map('n','q',':bwipeout<cr>')
   map('n','<esc>',':bwipeout<cr>')
-  map('n','i','')
+
+  local noops = {'a','c','d','i','x','r','o','p',}
+  for _,l in ipairs(noops) do
+    map('n',l,'')
+    map('n', string.upper(l),'')
+  end
 
   api.nvim_buf_set_name(disp.buf, '[WgcRun]')
   api.nvim_buf_set_lines(disp.buf, 0, -1, false, {
     utils.string.center(constants.WINDOW_TITLE, constants.WINDOW_WIDTH),
     utils.string.center("::: press [q] or <esc> to close :::", constants.WINDOW_WIDTH),
+    string.rep('━', constants.WINDOW_WIDTH),
     "",
   })
   api.nvim_buf_add_highlight(disp.buf,-1, 'WgcRunHeader', 0, 0, -1)
