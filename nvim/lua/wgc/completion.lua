@@ -26,12 +26,12 @@ cmp.setup({
     ['<CR>'] = cmp.mapping.confirm({ select = true }),
   }),
   sources=cmp.config.sources({
-    -- {name="nvim_lua"},
-    {name="nvim_lsp"},
-    {name="path"},
-    {name="luasnip"}
+    -- {name='nvim_lua'},
+    {name='nvim_lsp'},
+    {name='path'},
+    {name='luasnip'}
   },{
-    {name="buffer",keyword_length=3},
+    {name='buffer',keyword_length=3},
   }
   ),
   window = {
@@ -42,11 +42,11 @@ cmp.setup({
     format = lspkind.cmp_format({
       with_text=true,
       menu = {
-        buffer = "[buf]",
-        nvim_lsp = "[LSP]",
-        nvim_lua = "[api]",
-        path = "[path]",
-        luasnip = "[snip]",
+        buffer = '[buf]',
+        nvim_lsp = '[LSP]',
+        nvim_lua = '[api]',
+        path = '[path]',
+        luasnip = '[snip]',
       }
     })
   },

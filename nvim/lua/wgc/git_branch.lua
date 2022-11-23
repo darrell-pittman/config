@@ -6,11 +6,11 @@ local cache, cache_constants = require('wgc-nvim-utils').cache()
 local buf_git_dir_cache = cache:new()
 
 local constants = utils.table.protect {
-  GIT_DIR = file_path:new(".git"),
-  HEAD = file_path:new("HEAD"),
-  BRANCH_REGEX = "^.*/([^/\n]+)[%s\n]*$",
-  SUBMODULE_REGEX = "^gitdir:%s+([^\n]+)[%s\n]*$",
-  NOT_SET ="__WGC_NOT_SET__"
+  GIT_DIR = file_path:new('.git'),
+  HEAD = file_path:new('HEAD'),
+  BRANCH_REGEX = '^.*/([^/\n]+)[%s\n]*$',
+  SUBMODULE_REGEX = '^gitdir:%s+([^\n]+)[%s\n]*$',
+  NOT_SET ='__WGC_NOT_SET__'
 }
 
 local current_branch = constants.NOT_SET

@@ -4,19 +4,19 @@ local git_branch = require('wgc.git_branch').git_branch
 local M = {}
 
 local mode_symbols = {
-  ["i"] = " ",
-  ["n"] = " ",
-  ["c"] = " ",
-  ["v"] = " ",
-  ["V"] = " ",
-  [utils.t("<C-V>")] = "濾",
-  ["r"] = " ",
-  ["nt"] = " ",
-  ["t"] = " ",
+  ['i'] = ' ',
+  ['n'] = ' ',
+  ['c'] = ' ',
+  ['v'] = ' ',
+  ['V'] = ' ',
+  [utils.t('<C-V>')] = '濾',
+  ['r'] = ' ',
+  ['nt'] = ' ',
+  ['t'] = ' ',
 }
 
 local function get_mode()
-  return mode_symbols[vim.api.nvim_get_mode().mode] or " "
+  return mode_symbols[vim.api.nvim_get_mode().mode] or ' '
 end
 
 M.status_line = function()
@@ -24,7 +24,7 @@ M.status_line = function()
   local branch = git_branch()
 
   return table.concat({
-    " ",
+    ' ',
     get_mode(),
     branch and string.format('   %s', branch) or '',
     '   %-f',

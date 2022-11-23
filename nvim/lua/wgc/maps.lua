@@ -52,5 +52,5 @@ map('n', '<C-Right>', '<cmd>vertical resize +2<CR>')
 map('n', '<C-Left>', '<cmd>vertical resize -2<CR>')
 
 vim.cmd[[
-map <F4> <cmd>execute "vimgrep /" . expand("<cword>") . "/j **" <Bar> cw<CR>
+map <F4> <cmd>execute 'vimgrep /' . expand('<cword>') . '/j **' <Bar> cw<CR>
 ]]

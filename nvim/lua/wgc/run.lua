@@ -7,13 +7,14 @@ vim.cmd('highlight link WgcRunSubHeader Function')
 
 local M = {}
 
-M.run_group = vim.api.nvim_create_augroup("WgcRun", {
+M.run_group = vim.api.nvim_create_augroup('WgcRun', {
   clear = true,
 })
 
 local constants = utils.table.protect{
-  WINDOW_TITLE = "WgcRun",
+  WINDOW_TITLE = 'WgcRun',
   WINDOW_WIDTH = 65,
+  HEADER_SYM = '━',
 }
 
 local disp = nil
@@ -51,9 +52,9 @@ local function open_window(callback)
   api.nvim_buf_set_name(disp.buf, '[WgcRun]')
   api.nvim_buf_set_lines(disp.buf, 0, -1, false, {
     utils.string.center(constants.WINDOW_TITLE, constants.WINDOW_WIDTH),
-    utils.string.center("::: press [q] or <esc> to close :::", constants.WINDOW_WIDTH),
-    string.rep('━', constants.WINDOW_WIDTH),
-    "",
+    utils.string.center('::: press [q] or <esc> to close :::', constants.WINDOW_WIDTH),
+    string.rep(constants.HEADER_SYM, constants.WINDOW_WIDTH),
+    '',
   })
   api.nvim_buf_add_highlight(disp.buf,-1, 'WgcRunHeader', 0, 0, -1)
   api.nvim_buf_add_highlight(disp.buf,-1, 'WgcRunSubHeader', 1, 0, -1)
@@ -84,20 +85,20 @@ local function default_runner(header, footer, cmd, buffered)
 end
 
 function M.run_love_project(file)
-  file:search_up(file_path:new("main.lua"), vim.schedule_wrap(function(main_file)
+  file:search_up(file_path:new('main.lua'), vim.schedule_wrap(function(main_file)
     if main_file then
       open_window(default_runner({
-        "LOVE2d output ...", ""
+        'LOVE2d output ...', ''
       }, {
-        "",
-        "--LOVE2d Finished!--",
+        '',
+        '--LOVE2d Finished!--',
       }, {
-        "love",
+        'love',
         tostring(main_file:parent()),
       },
       false))
     else
-      print("Failed to find main.lua")
+      print('Failed to find main.lua')
     end
   end))
 end
