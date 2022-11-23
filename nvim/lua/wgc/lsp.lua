@@ -1,6 +1,6 @@
 local utils = require('wgc-nvim-utils').utils
 
-local gmap = utils.make_mapper {silent = true}
+local gmap = utils.make_mapper { silent = true }
 
 local lspconfig = require 'lspconfig'
 
@@ -13,8 +13,8 @@ gmap('n', '<leader>q', '<cmd>lua vim.diagnostic.setloclist()<CR>')
 
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
-local on_attach = function(client, bufnr)
-  local map = utils.make_mapper {buffer = bufnr, silent = true} 
+local on_attach = function(_, bufnr)
+  local map = utils.make_mapper { buffer = bufnr, silent = true, nowait = true }
   -- Enable completion triggered by <c-x><c-o>
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
@@ -38,7 +38,7 @@ end
 -- Use a loop to conveniently call 'setup' on multiple servers and
 
 -- map buffer local keybindings when the language server attaches
-local servers = { 'rust_analyzer','ccls','sumneko_lua' }
+local servers = { 'rust_analyzer', 'ccls' }
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 for _, lsp in pairs(servers) do
   lspconfig[lsp].setup {
@@ -56,6 +56,8 @@ table.insert(runtime_path, 'lua/?.lua')
 table.insert(runtime_path, 'lua/?/init.lua')
 
 lspconfig.sumneko_lua.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
   settings = {
     Lua = {
       runtime = {

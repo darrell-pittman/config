@@ -15,7 +15,20 @@ local constants = utils.table.protect{
   WINDOW_TITLE = 'WgcRun',
   WINDOW_WIDTH = 65,
   HEADER_SYM = '━',
+  MARGIN = 1,
 }
+
+local function pad(l)
+  return utils.string.pad(l, constants.MARGIN)
+end
+
+local function center(l)
+  return utils.string.center(l, constants.WINDOW_WIDTH)
+end
+
+local function tbl_pad(t)
+  return vim.tbl_map(pad,t)
+end
 
 local disp = nil
 
@@ -51,13 +64,13 @@ local function open_window(callback)
 
   api.nvim_buf_set_name(disp.buf, '[WgcRun]')
   api.nvim_buf_set_lines(disp.buf, 0, -1, false, {
-    utils.string.center(constants.WINDOW_TITLE, constants.WINDOW_WIDTH),
-    utils.string.center('::: press [q] or <esc> to close :::', constants.WINDOW_WIDTH),
-    string.rep(constants.HEADER_SYM, constants.WINDOW_WIDTH),
+    center(constants.WINDOW_TITLE),
+    center('::: press [q] or <esc> to close :::'),
+    pad(string.rep(constants.HEADER_SYM, constants.WINDOW_WIDTH - 2 * constants.MARGIN)),
     '',
   })
-  api.nvim_buf_add_highlight(disp.buf,-1, 'WgcRunHeader', 0, 0, -1)
-  api.nvim_buf_add_highlight(disp.buf,-1, 'WgcRunSubHeader', 1, 0, -1)
+  api.nvim_buf_add_highlight(disp.buf,-1, 'WgcRunHeader', 0, constants.MARGIN, -1)
+  api.nvim_buf_add_highlight(disp.buf,-1, 'WgcRunSubHeader', 1, constants.MARGIN, -1)
   callback()
 end
 
@@ -66,6 +79,7 @@ local function default_runner(header, footer, cmd, buffered)
     if data then
       data = vim.tbl_filter(utils.string.is_not_empty,data)
       if #data > 0 then
+        data = tbl_pad(data)
         api.nvim_buf_set_lines(disp.buf,-1,-1,false,data)
       end
     end
@@ -87,12 +101,12 @@ end
 function M.run_love_project(file)
   file:search_up(file_path:new('main.lua'), vim.schedule_wrap(function(main_file)
     if main_file then
-      open_window(default_runner({
+      open_window(default_runner(tbl_pad({
         'LOVE2d output ...', ''
-      }, {
+      }), tbl_pad({
         '',
         '--LOVE2d Finished!--',
-      }, {
+      }), {
         'love',
         tostring(main_file:parent()),
       },
