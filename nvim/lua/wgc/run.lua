@@ -63,7 +63,10 @@ end
 local function default_runner(header, footer, cmd, buffered)
   local default_handler = function(_, data)
     if data then
-      api.nvim_buf_set_lines(disp.buf,-1,-1,false,data)
+      data = vim.tbl_filter(utils.string.is_not_empty,data)
+      if #data > 0 then
+        api.nvim_buf_set_lines(disp.buf,-1,-1,false,data)
+      end
     end
   end
 
@@ -86,6 +89,7 @@ function M.run_love_project(file)
       open_window(default_runner({
         "LOVE2d output ...", ""
       }, {
+        "",
         "--LOVE2d Finished!--",
       }, {
         "love",
