@@ -44,8 +44,8 @@ local function open_window(callback)
 
   local noops = {'a','c','d','i','x','r','o','p',}
   for _,l in ipairs(noops) do
-    map('n',l,'')
-    map('n', string.upper(l),'')
+    map('',l,'')
+    map('', string.upper(l),'')
   end
 
   api.nvim_buf_set_name(disp.buf, '[WgcRun]')
