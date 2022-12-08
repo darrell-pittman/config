@@ -71,6 +71,16 @@ input type:keyboard {
   xkb_numlock enabled
 }
 
+# Tablet size 21600 x 13500
+# Fix aspect ratio with: (21600 x 1080)/(13500 * 1920)
+input '1386:888:Wacom_Intuos_BT_M_Pen' {
+  map_from_region 0.0x0.0 1.0x0.9
+}
+
+bindsym --input-device='1386:888:Wacom_Intuos_BT_M_Pad' --whole-window --release button1 exec 'wtype -k a'
+
+
+
 
 #
 # You can get the names of your inputs by running: swaymsg -t get_inputs

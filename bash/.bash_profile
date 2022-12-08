@@ -11,3 +11,10 @@ export PATH=`printf %s "$PATH" \
 # Honor per-interactive-shell startup file
 if [ -f ~/.bashrc ]; then . ~/.bashrc; fi
 
+# export DRI_PRIME=1
+
+. "$HOME/.cargo/env"
+
+if [ -z "${DISPLAY}" ] && [ "${XDG_VTNR}" -eq 1 ]; then
+  exec startx
+fi

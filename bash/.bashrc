@@ -88,6 +88,9 @@ btc() {
   elif [[ $DEVICE == "galaxy" || $DEVICE == "buds" ]]
   then
     DEVICE_NUM=2
+  elif [[ $DEVICE == "intuos" ]]
+  then
+    DEVICE_NUM=3
   fi
   bluetoothctl connect \
     $(bluetoothctl devices|sort|head -$DEVICE_NUM|tail -1|cut -d " " -f 2)
@@ -96,17 +99,6 @@ btc() {
 export EDITOR='nvim'
 export VISUAL='nvim'
 
-if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
-  export MOZ_ENABLE_WAYLAND=1
-  export XDG_SESSION_TYPE=wayland
-  export XDG_SESSION_DESKTOP=sway
-  export XDG_CURRENT_DESKTOP=sway
-  export LIBSEAT_BACKEND=seatd
-  dbus-run-session sway
-fi
-
-fastfetch --logo-color-1 blue
-
 . "$HOME/.cargo/env"
 . "$HOME/software/vulkan/1.3.231.1/setup-env.sh"
 
@@ -114,4 +106,14 @@ if [ -f "${HOME}/.config/lua/init.lua" ]
 then
   export LUA_INIT="@${HOME}/.config/lua/init.lua"
 fi
+
+#if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
+#  export MOZ_ENABLE_WAYLAND=1
+#  export XDG_SESSION_TYPE=wayland
+#  export XDG_SESSION_DESKTOP=sway
+#  export XDG_CURRENT_DESKTOP=sway
+#  export LIBSEAT_BACKEND=seatd
+#  dbus-run-session sway
+#fi
+
 

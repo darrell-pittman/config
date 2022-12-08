@@ -1,0 +1,5 @@
+#!/bin/sh
+xsetwacom --set "Wacom Intuos BT M Pad pad" Button 8 "key ctrl"
+xsetwacom --set "Wacom Intuos BT M Pad pad" Button 3 "key shift"
+xsetwacom --set "Wacom Intuos BT M Pad pad" Button 2 "key alt"
+

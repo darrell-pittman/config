@@ -4,15 +4,15 @@ local git_branch = require('wgc.git_branch').git_branch
 local M = {}
 
 local mode_symbols = {
-  ['i'] = ' ',
-  ['n'] = ' ',
-  ['c'] = ' ',
-  ['v'] = ' ',
-  ['V'] = ' ',
+  ['i'] = '',
+  ['n'] = '',
+  ['c'] = '',
+  ['v'] = '',
+  ['V'] = '',
   [utils.t('<C-V>')] = '濾',
-  ['r'] = ' ',
-  ['nt'] = ' ',
-  ['t'] = ' ',
+  ['r'] = '',
+  ['nt'] = '',
+  ['t'] = '',
 }
 
 local function get_mode()
