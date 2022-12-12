@@ -1,0 +1,16 @@
+#!/bin/sh
+
+type="${1:-launcher}"
+
+case $type in
+  "launcher")
+    /usr/bin/rofi -show drun -modes drun,run
+    ;;
+  "windows")
+    /usr/bin/rofi -show window
+    ;;
+  "dotfiles")
+    /usr/bin/rofi -show dotfile -modes "dotfile:/opt/config/scripts/rofi/dotfiles.sh"
+    ;;
+esac
+
