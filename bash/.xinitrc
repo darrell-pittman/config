@@ -63,8 +63,8 @@ xsetroot -solid "#333333"
 ulimit -c unlimited
 
 
-. $HOME/bin/gimp_pixel_art
-$HOME/bin/display.sh external
+#. $HOME/bin/gimp_pixel_art
+#$HOME/bin/display.sh external
 
 /usr/bin/numlockx
 /usr/bin/xscreensaver --no-splash &
@@ -72,8 +72,13 @@ $HOME/bin/display.sh external
 
 
 # Start i3 and log to ~/.i3/logfile
-echo "Starting at $(date)" > ~/.i3/logfile
-/usr/bin/i3 -V -d all >> ~/.i3/logfile 
+#echo "Starting at $(date)" > ~/.i3/logfile
+#/usr/bin/i3 -V -d all >> ~/.i3/logfile 
+
+#export DESKTOP_SESSION=plasma
+#startplasma-x11
+
+
 /usr/bin/pkill -9 redshift
 /usr/bin/pkill -9 pipewire
 

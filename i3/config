@@ -164,6 +164,7 @@ bindsym Control+$alt+l exec --no-startup-id /usr/bin/loginctl lock-session
 bindsym Control+$alt+s exec --no-startup-id /usr/bin/loginctl suspend
 bindsym $mod+semicolon exec --no-startup-id rofi_run dotfiles
 bindsym $alt+Tab exec --no-startup-id rofi_run windows
+bindsym $mod+bracketleft exec --no-startup-id DRI_PRIME=1 blender
 
 # Start Up
 exec --no-startup-id i3-msg 'workspace 1; exec firefox; workspace 1'

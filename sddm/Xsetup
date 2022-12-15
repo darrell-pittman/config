@@ -1,0 +1,3 @@
+#!/bin/sh
+
+/opt/config/bin/x11_display external
