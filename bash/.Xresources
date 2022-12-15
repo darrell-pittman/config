@@ -1,10 +1,11 @@
 *.vt100*faceName: mono:size=15:antialias=false
 *.vt100*allowBoldFonts: false
-*.vt100.locale: true
+*.vt100*locale: true
 *.vt100*background: #223333
 *.vt100*foreground: white
 *.vt100*selectToClipboard: true
 *.vt100*saveLines: 4096
+UXTerm*maximized: true
 
 !Disable Aternate Screen
 *titeInhibit: true

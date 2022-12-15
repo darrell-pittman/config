@@ -107,6 +107,9 @@ then
   export LUA_INIT="@${HOME}/.config/lua/init.lua"
 fi
 
+LS_COLORS=$LS_COLORS:'di=0;93:'
+export LS_COLORS
+
 #if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
 #  export MOZ_ENABLE_WAYLAND=1
 #  export XDG_SESSION_TYPE=wayland
