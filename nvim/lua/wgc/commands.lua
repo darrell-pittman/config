@@ -30,6 +30,13 @@ vim.api.nvim_create_autocmd('BufEnter', {
   callback = create_run_command
 })
 
-
-
-
+-- [[ Highlight on yank ]]
+-- See `:help vim.highlight.on_yank()`
+local highlight_group = vim.api.nvim_create_augroup('WgcYankHighlight', { clear = true })
+vim.api.nvim_create_autocmd('TextYankPost', {
+  callback = function()
+    vim.highlight.on_yank({timeout=500})
+  end,
+  group = highlight_group,
+  pattern = '*',
+})

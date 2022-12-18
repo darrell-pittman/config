@@ -5,8 +5,16 @@
 *.vt100*foreground: white
 *.vt100*selectToClipboard: true
 *.vt100*saveLines: 4096
-UXTerm*maximized: true
 
-!Disable Aternate Screen
+!Disable Alternate Screen
 *titeInhibit: true
+
+*maximized: true
+
+*ttyModes: erase ^?
+*vt100.Translations: \
+        #override <Key>BackSpace: string(0x7f) \n\
+                  <Key>Delete: string(0x1b) string("[3~")
+
+Xft.size: 15
 

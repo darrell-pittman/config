@@ -37,9 +37,12 @@ end
 
 -- Use a loop to conveniently call 'setup' on multiple servers and
 
+-- nvim-cmp supports additional completion capabilities
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+
 -- map buffer local keybindings when the language server attaches
 local servers = { 'rust_analyzer', 'ccls' }
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
 for _, lsp in pairs(servers) do
   lspconfig[lsp].setup {
     on_attach = on_attach,
@@ -82,3 +85,6 @@ lspconfig.sumneko_lua.setup {
     },
   },
 }
+
+-- Turn on lsp status information
+require('fidget').setup()
