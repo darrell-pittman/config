@@ -13,3 +13,4 @@ alias po='loginctl poweroff'
 alias pw='pipewire-start'
 
 alias buds='btc buds'
+alias dev-gimp='(source /opt/config/bash/gimp_vars; ${GIMP_PREFIX}/bin/gimp)'

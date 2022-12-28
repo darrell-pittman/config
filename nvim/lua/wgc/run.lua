@@ -11,7 +11,7 @@ M.run_group = vim.api.nvim_create_augroup('WgcRun', {
   clear = true,
 })
 
-local constants = utils.table.protect{
+local constants = utils.table.protect {
   WINDOW_TITLE = 'WgcRun',
   WINDOW_WIDTH = 65,
   HEADER_SYM = '━',
@@ -27,7 +27,7 @@ local function center(l)
 end
 
 local function tbl_pad(t)
-  return vim.tbl_map(pad,t)
+  return vim.tbl_map(pad, t)
 end
 
 local disp = nil
@@ -44,22 +44,22 @@ local function open_window(callback)
   disp.buf = api.nvim_get_current_buf()
   disp.win = api.nvim_get_current_win()
 
-  vim.cmd('setlocal buftype=nofile bufhidden=wipe nobuflisted'..
-  ' nolist noswapfile nowrap nospell nonumber norelativenumber'..
-  ' nofoldenable signcolumn=no')
+  vim.cmd('setlocal buftype=nofile bufhidden=wipe nobuflisted' ..
+    ' nolist noswapfile nowrap nospell nonumber norelativenumber' ..
+    ' nofoldenable signcolumn=no')
 
   local map = utils.make_mapper({
-    buffer=disp.buf,
-    silent=true,
-    nowait=true,
+    buffer = disp.buf,
+    silent = true,
+    nowait = true,
   })
-  map('n','q',':bwipeout<cr>')
-  map('n','<esc>',':bwipeout<cr>')
+  map('n', 'q', ':bwipeout<cr>')
+  map('n', '<esc>', ':bwipeout<cr>')
 
-  local noops = {'a','c','d','i','x','r','o','p',}
-  for _,l in ipairs(noops) do
-    map('',l,'')
-    map('', string.upper(l),'')
+  local noops = { 'a', 'c', 'd', 'i', 'x', 'r', 'o', 'p', }
+  for _, l in ipairs(noops) do
+    map('', l, '')
+    map('', string.upper(l), '')
   end
 
   api.nvim_buf_set_name(disp.buf, '[WgcRun]')
@@ -69,29 +69,29 @@ local function open_window(callback)
     pad(string.rep(constants.HEADER_SYM, constants.WINDOW_WIDTH - 2 * constants.MARGIN)),
     '',
   })
-  api.nvim_buf_add_highlight(disp.buf,-1, 'WgcRunHeader', 0, constants.MARGIN, -1)
-  api.nvim_buf_add_highlight(disp.buf,-1, 'WgcRunSubHeader', 1, constants.MARGIN, -1)
+  api.nvim_buf_add_highlight(disp.buf, -1, 'WgcRunHeader', 0, constants.MARGIN, -1)
+  api.nvim_buf_add_highlight(disp.buf, -1, 'WgcRunSubHeader', 1, constants.MARGIN, -1)
   callback()
 end
 
 local function default_runner(header, footer, cmd, buffered)
   local default_handler = function(_, data)
     if data then
-      data = vim.tbl_filter(utils.string.is_not_empty,data)
+      data = vim.tbl_filter(utils.string.is_not_empty, data)
       if #data > 0 then
         data = tbl_pad(data)
-        api.nvim_buf_set_lines(disp.buf,-1,-1,false,data)
+        api.nvim_buf_set_lines(disp.buf, -1, -1, false, data)
       end
     end
   end
 
   return function()
-    api.nvim_buf_set_lines(disp.buf,-1,-1,false,header)
+    api.nvim_buf_set_lines(disp.buf, -1, -1, false, header)
     vim.fn.jobstart(cmd, {
       on_stdout = default_handler,
       on_stderr = default_handler,
       on_exit = function()
-        api.nvim_buf_set_lines(disp.buf,-1,-1,false, footer)
+        api.nvim_buf_set_lines(disp.buf, -1, -1, false, footer)
       end,
       stdout_buffered = buffered,
     })
@@ -110,7 +110,26 @@ function M.run_love_project(file)
         'love',
         tostring(main_file:parent()),
       },
-      false))
+        false))
+    else
+      print('Failed to find main.lua')
+    end
+  end))
+end
+
+function M.run_rust_project(file)
+  file:search_up(file_path:new('main.rs'), vim.schedule_wrap(function(main_file)
+    if main_file then
+      open_window(default_runner(tbl_pad({
+        'Cargo output ...', ''
+      }), tbl_pad({
+        '',
+        '--Cargo Finished!--',
+      }), {
+        'cargo',
+        'run',
+      },
+        false))
     else
       print('Failed to find main.lua')
     end
@@ -118,4 +137,3 @@ function M.run_love_project(file)
 end
 
 return M
-
