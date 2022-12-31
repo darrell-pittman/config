@@ -5,7 +5,9 @@ require('nvim-treesitter.configs').setup {
   ensure_installed = { 'c', 'cpp', 'lua', 'rust', 'help' },
 
   highlight = { enable = true },
-  indent = { enable = true },
+  indent = {
+    enable = true,
+  },
   incremental_selection = {
     enable = true,
     keymaps = {

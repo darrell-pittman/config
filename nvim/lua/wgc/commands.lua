@@ -13,7 +13,7 @@ vim.api.nvim_create_autocmd('BufEnter', {
 
 local function create_run_command(info)
   local map = utils.make_mapper({ buffer = info.buf, silent = true })
-  map('n', '<leader>r', ':WgcRun<cr>')
+  map('n', '<leader>rr', ':WgcRun<cr>')
   local file = file_path:new(info.file)
   local extension = file:extension()
   if extension == 'lua' then

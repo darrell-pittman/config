@@ -6,6 +6,7 @@ vim.cmd('highlight link WgcRunHeader Title')
 vim.cmd('highlight link WgcRunSubHeader Function')
 
 local M = {}
+local current_job_id = nil
 
 M.run_group = vim.api.nvim_create_augroup('WgcRun', {
   clear = true,
@@ -32,6 +33,14 @@ end
 
 local disp = nil
 
+local function kill_job()
+  if current_job_id then
+    vim.fn.jobstop(current_job_id)
+    api.nvim_buf_set_lines(disp.buf, -1, -1, false, {pad(string.format("Killed Job [ id = %d ]", current_job_id))})
+    current_job_id = nil
+  end
+end
+
 local function open_window(callback)
   if disp then
     if api.nvim_win_is_valid(disp.win) then
@@ -55,6 +64,7 @@ local function open_window(callback)
   })
   map('n', 'q', ':bwipeout<cr>')
   map('n', '<esc>', ':bwipeout<cr>')
+  map('n', '<C-c>', kill_job)
 
   local noops = { 'a', 'c', 'd', 'i', 'x', 'r', 'o', 'p', }
   for _, l in ipairs(noops) do
@@ -65,7 +75,7 @@ local function open_window(callback)
   api.nvim_buf_set_name(disp.buf, '[WgcRun]')
   api.nvim_buf_set_lines(disp.buf, 0, -1, false, {
     center(constants.WINDOW_TITLE),
-    center('::: press [q] or <esc> to close :::'),
+    center('::: press [q] or <esc> to close (<C-c> to kill job) :::'),
     pad(string.rep(constants.HEADER_SYM, constants.WINDOW_WIDTH - 2 * constants.MARGIN)),
     '',
   })
@@ -86,15 +96,18 @@ local function default_runner(header, footer, cmd, buffered)
   end
 
   return function()
+    kill_job()
     api.nvim_buf_set_lines(disp.buf, -1, -1, false, header)
-    vim.fn.jobstart(cmd, {
+    current_job_id = vim.fn.jobstart(cmd, {
       on_stdout = default_handler,
       on_stderr = default_handler,
       on_exit = function()
         api.nvim_buf_set_lines(disp.buf, -1, -1, false, footer)
+        current_job_id = nil
       end,
       stdout_buffered = buffered,
     })
+    api.nvim_buf_set_lines(disp.buf, -1, -1, false, {pad(string.format("Started Job [ id = %d ]", current_job_id))})
   end
 end
 
@@ -131,7 +144,7 @@ function M.run_rust_project(file)
       },
         false))
     else
-      print('Failed to find main.lua')
+      print('Failed to find main.rs')
     end
   end))
 end

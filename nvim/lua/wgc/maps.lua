@@ -27,7 +27,7 @@ map('n', '<leader>p', '"0p') --Paste last thing not deleted
 map('n', '<leader>P', '"0P') --       "
 map('n', '<leader>w', '<cmd>up<CR>') --Write only if buffer changed
 map('n', '<leader>m', '<C-W>_<C-W>|') --Maximize current window
-map('n', '<leader>r', '<Nop>') --<leader>r runs WgcRun for some buffers, Nop by default so as not to go into replace mode
+map('n', '<leader>r', '<Nop>') --<leader>rr runs WgcRun for some buffers, Nop by default so as not to go into replace mode
 cmd_prompt_map('n', '<leader><leader>x', ':source %<CR>')
 
 --Misc
