@@ -31,8 +31,8 @@ window:
   # must be at least `2`, while using a value of `0` for columns and lines will
   # fall back to the window manager's recommended size.
   #dimensions:
-  #  columns: 0
-  #  lines: 0
+  #  columns: 170
+  #  lines: 40
 
   # Window position (changes require restart)
   #
@@ -73,7 +73,7 @@ window:
   #
   # Values for `startup_mode` (macOS only):
   #   - SimpleFullscreen
-  #startup_mode: Maximized
+  startup_mode: Maximized
 
   # Window title
   #title: Alacritty
@@ -105,7 +105,7 @@ window:
 # Font configuration
 font:
   # Normal (roman) font face
-  normal:
+  #normal:
     # Font family
     #
     # Default:
@@ -113,13 +113,13 @@ font:
     #   - (Linux/BSD) monospace
     #   - (Windows) Consolas
     #family: Source Code Variable
-    family: JetBrainsMono Nerd Font
+    #family: JetBrainsMono Nerd Font
 
     # The `style` can be specified to pick a specific face.
     #style: Regular
 
   # Bold font face
-  #bold:
+  bold:
     # Font family
     #
     # If the bold family is not specified, it will fall back to the
@@ -127,7 +127,7 @@ font:
     #family: monospace
 
     # The `style` can be specified to pick a specific face.
-    #style: Bold
+    style: Regular
     #family: Fira Code
 
   # Italic font face
@@ -155,7 +155,7 @@ font:
     #style: Bold Italic
 
   # Point size
-  size: 14.0
+  size: 15.0
 
   # Offset is the extra space around each character. `offset.y` can be thought
   # of as modifying the line spacing, and `offset.x` as modifying the letter
