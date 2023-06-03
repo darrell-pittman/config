@@ -510,7 +510,8 @@ Please deselect the accounts with negative balances."))
                                  dates-list))
                  (date-string-list (map qof-print-date dates-list))
                  (list-of-rows #f)
-                 (row-totals #f))
+                 (row-totals #f)
+                 (col-totals #f))
 
             ;; Set chart title, subtitle etc.
             (gnc:html-chart-set-type!
@@ -559,6 +560,7 @@ Please deselect the accounts with negative balances."))
                        (gnc:make-report reportguid options))))))
 
             (set! list-of-rows (apply zip (map cadr all-data)))
+            (set! col-totals (apply map + list-of-rows))
             (set! row-totals (map (cut fold + 0 <>) list-of-rows))
             (gnc:report-percent-done 92)
 
@@ -643,10 +645,10 @@ Please deselect the accounts with negative balances."))
 
                 (if rows>1? 
                   (gnc:html-table-append-row! table  (append (list (gnc:make-html-table-cell/markup "centered-label-cell" "Total"))
+
                                                              (map (lambda (amt)
-                                                                    (make-cell "")) (car list-of-rows))
-                                                             (list (make-monetary-cell (apply + (map (lambda (row)
-                                                                                                       (apply + row)) list-of-rows)))))))
+                                                                    (make-monetary-cell amt)) col-totals)
+                                                             (list (make-monetary-cell (apply + col-totals))))))
 
                 (gnc:html-table-set-col-headers!
                  table
