@@ -1,0 +1,19 @@
+# Copy this file to /etc
+# Static information about the filesystems.
+# See fstab(5) for details.
+
+# <file system> <dir> <type> <options> <dump> <pass>
+
+# /dev/sda3
+# UUID=c537219d-b927-46ea-a58c-6e90be668f6c	/         	ext4      	rw,relatime,discard	0 1
+UUID=1bacbdfd-9e46-495e-aae8-15e67ab4aa54	/	 	btrfs     	rw,relatime,compress=zstd:4,ssd,space_cache,subvol=@		0 0
+UUID=1bacbdfd-9e46-495e-aae8-15e67ab4aa54	/home		btrfs     	rw,relatime,compress=zstd:4,ssd,space_cache,subvol=@home	0 0
+
+# /dev/sda1
+UUID=2599-D9DC      	/boot/efi 	vfat      	rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro	0 2
+
+# /swapfile
+# /swapfile	none	swap	defaults	0 0
+# /dev/sda3
+
+

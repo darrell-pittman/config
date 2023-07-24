@@ -6,6 +6,7 @@ require('packer').startup(function(use)
     'neovim/nvim-lspconfig',
     requires = {
       'j-hui/fidget.nvim',
+      tag = 'legacy',
     }
   }
 

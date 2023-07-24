@@ -169,8 +169,8 @@ bindsym --input-device='1386:888:Wacom_Intuos_BT_M_Pad' --whole-window --release
 
 
     # App Assignments
-    assign [app_id="firefox"] workspace number $browser_workspace
-    assign [class="Blender"] workspace number $blender_workspace
+    assign [class="firefox"] workspace number $browser_workspace
+    assign [app_id="blender"] workspace number $blender_workspace
 #
 # Layout stuff:
 #
@@ -279,13 +279,13 @@ default_border pixel 2
 
 # Apps
 bindsym $mod+bracketright exec swaymsg 'exec GDK_DPI_SCALE=$gdk_dpi_scale $browser; workspace $browser_workspace'
-bindsym $mod+bracketleft exec swaymsg 'exec DRI_PRIME=1 blender; workspace $blender_workspace'
+bindsym $mod+bracketleft exec swaymsg 'exec flatpak run org.blender.Blender; workspace $blender_workspace'
 
 # Font
 font pango:Fira Code Retina 16
 
 # Start Up
-exec swaymsg 'workspace $browser_workspace; exec GDK_DPI_SCALE=$gdk_dpi_scale $browser && sleep 5; workspace 2; exec $term; workspace 3; exec $term;'
+exec swaymsg 'exec GDK_DPI_SCALE=$gdk_dpi_scale $browser; workspace 2; exec $term;'
 
 include /home/darrell/config/sway/config.d/*
 
