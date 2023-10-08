@@ -1,18 +1,32 @@
-require('packer').startup(function(use)
-  --Packer can manage itself
-  use 'wbthomason/packer.nvim'
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", -- latest stable release
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
 
-  use { --LSP
+vim.g.mapleader = ' '
+
+require("lazy").setup({
+
+  { --LSP
     'neovim/nvim-lspconfig',
-    requires = {
-      'j-hui/fidget.nvim',
-      tag = 'legacy',
-    }
-  }
+    dependencies = {
+      "j-hui/fidget.nvim",
+      tag = "legacy",
+      event = "LspAttach",
+    },
+  },
 
-  use { --Autocompletion
+  { --Autocompletion
     'hrsh7th/nvim-cmp',
-    requires = {
+    dependencies = {
       'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-nvim-lua',
       'hrsh7th/cmp-buffer',
@@ -21,41 +35,36 @@ require('packer').startup(function(use)
       'saadparwaiz1/cmp_luasnip',
       'L3MON4D3/LuaSnip'
     }
-  }
+  },
 
-  use { -- Highlight, edit, and navigate code
+  { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
-    run = function()
+    init = function()
       pcall(require('nvim-treesitter.install').update { with_sync = true })
     end,
-  }
-
-  use { -- Additional text objects via treesitter
-    'nvim-treesitter/nvim-treesitter-textobjects',
-    after = 'nvim-treesitter',
-  }
+    dependencies = { -- Additional text objects via treesitter
+      'nvim-treesitter/nvim-treesitter-textobjects',
+    },
+  },
 
   -- Fuzzy Finder (files, lsp, etc)
-  use {
+  {
     'nvim-telescope/telescope.nvim',
     branch = '0.1.x',
-    requires = { 'nvim-lua/plenary.nvim' }
-  }
+    dependencies = { 'nvim-lua/plenary.nvim' }
+  },
 
   -- Fuzzy Finder Algorithm which requires local dependencies to be built.
   -- Only load if `make` is available
-  use {
+  {
     'nvim-telescope/telescope-fzf-native.nvim',
-    run = 'make',
-    cond = vim.fn.executable 'make' == 1
-  }
+    build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build',
+  },
 
   -- "gc" to comment visual regions/lines
-  use 'numToStr/Comment.nvim'
+  'numToStr/Comment.nvim',
 
-  use 'onsails/lspkind.nvim'
-  use 'darrell-pittman/wgc-nvim-utils'
-end)
-
-require('Comment').setup()
+  'onsails/lspkind.nvim',
+  'darrell-pittman/wgc-nvim-utils',
+})
 
