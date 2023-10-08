@@ -98,10 +98,10 @@ M.update_current_branch = function(info)
   if git_dir then
     handle_git_dir(git_dir)
   else
-    find_git_dir(info.file, function(git_dir)
-      git_dir = git_dir or cache_constants.NO_VALUE
-      buf_git_dir_cache:set(info.buf, git_dir)
-      handle_git_dir(git_dir)
+    find_git_dir(info.file, function(found)
+      found = found or cache_constants.NO_VALUE
+      buf_git_dir_cache:set(info.buf, found)
+      handle_git_dir(found)
     end)
   end
 end

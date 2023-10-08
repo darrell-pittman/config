@@ -34,7 +34,7 @@ end
 local disp = nil
 
 local function kill_job()
-  if current_job_id then
+  if current_job_id and disp then
     vim.fn.jobstop(current_job_id)
     api.nvim_buf_set_lines(disp.buf, -1, -1, false, {pad(string.format("Killed Job [ id = %d ]", current_job_id))})
     current_job_id = nil
@@ -90,24 +90,32 @@ local function default_runner(header, footer, cmd, buffered)
       data = vim.tbl_filter(utils.string.is_not_empty, data)
       if #data > 0 then
         data = tbl_pad(data)
-        api.nvim_buf_set_lines(disp.buf, -1, -1, false, data)
+        if disp then
+          api.nvim_buf_set_lines(disp.buf, -1, -1, false, data)
+        end
       end
     end
   end
 
   return function()
     kill_job()
-    api.nvim_buf_set_lines(disp.buf, -1, -1, false, header)
+    if disp then
+      api.nvim_buf_set_lines(disp.buf, -1, -1, false, header)
+    end
     current_job_id = vim.fn.jobstart(cmd, {
       on_stdout = default_handler,
       on_stderr = default_handler,
       on_exit = function()
-        api.nvim_buf_set_lines(disp.buf, -1, -1, false, footer)
+        if disp then
+          api.nvim_buf_set_lines(disp.buf, -1, -1, false, footer)
+        end
         current_job_id = nil
       end,
       stdout_buffered = buffered,
     })
-    api.nvim_buf_set_lines(disp.buf, -1, -1, false, {pad(string.format("Started Job [ id = %d ]", current_job_id))})
+    if disp then
+      api.nvim_buf_set_lines(disp.buf, -1, -1, false, {pad(string.format("Started Job [ id = %d ]", current_job_id))})
+    end
   end
 end
 

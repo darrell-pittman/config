@@ -2,6 +2,10 @@
 -- See `:help nvim-treesitter`
 require('nvim-treesitter.configs').setup {
   -- Add languages to be installed here that you want installed for treesitter
+  sync_install = false,
+  auto_install = false,
+  modules = {},
+  ignore_install = {},
   ensure_installed = { 'c', 'cpp', 'lua', 'rust', 'vimdoc' },
 
   highlight = { enable = true },
