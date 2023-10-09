@@ -9,8 +9,8 @@ utils.options.set({
   background = 'dark',
   termguicolors = false,
   syntax = 'on',
-  directory = utils.constants.HOME..'/backups/vim/swapfiles//',
-  backupdir = utils.constants.HOME..'/backups/vim/backup_files//',
+  directory = utils.constants.HOME .. '/backups/vim/swapfiles//',
+  backupdir = utils.constants.HOME .. '/backups/vim/backup_files//',
   undofile = false,
   colorcolumn = '80',
   completeopt = 'menuone,noselect',
@@ -28,10 +28,10 @@ utils.options.set({
   statusline = "%!v:lua.require('wgc.status_line').status_line()",
   showmode = false,
   ignorecase = true,
-  smartcase =true,
+  smartcase = true,
 })
 
 utils.options.append({
-  path = {'.','**'},
-  wildignore = {'**/debug/**', '**/release/**','**/.git/**'},
+  path = { '.', '**' },
+  wildignore = { '**/debug/**', '**/release/**', '**/.git/**' },
 })

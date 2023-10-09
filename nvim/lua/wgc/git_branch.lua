@@ -10,7 +10,7 @@ local constants = utils.table.protect {
   HEAD = file_path:new('HEAD'),
   BRANCH_REGEX = '^.*/([^/\n]+)[%s\n]*$',
   SUBMODULE_REGEX = '^gitdir:%s+([^\n]+)[%s\n]*$',
-  NOT_SET ='__WGC_NOT_SET__'
+  NOT_SET = '__WGC_NOT_SET__'
 }
 
 local current_branch = constants.NOT_SET
@@ -20,7 +20,7 @@ local file_watch = vim.loop.new_fs_event()
 local function set_branch(branch)
   if branch ~= current_branch then
     current_branch = branch
-    vim.schedule(function ()
+    vim.schedule(function()
       vim.opt.statusline = vim.opt.statusline:get()
     end)
   end
@@ -36,24 +36,24 @@ local function find_git_dir(file, callback)
   path:search_up(constants.GIT_DIR, function(git_dir)
     if git_dir then
       git_dir:is_directory(
-      function()
-        callback(git_dir)
-      end,
-      function()
-        -- '.git' is a file. This happens with submodules
-        git_dir:read(function(data)
-          local path = data:match(constants.SUBMODULE_REGEX)
-          if path then
-            path = file_path:new(path)
-            if not path:is_absolute() then
-              path = git_dir:parent()..path
+        function()
+          callback(git_dir)
+        end,
+        function()
+          -- '.git' is a file. This happens with submodules
+          git_dir:read(function(data)
+            local path = data:match(constants.SUBMODULE_REGEX)
+            if path then
+              path = file_path:new(path)
+              if not path:is_absolute() then
+                path = git_dir:parent() .. path
+              end
+              callback(path)
+            else
+              clear()
             end
-            callback(path)
-          else
-            clear()
-          end
+          end)
         end)
-      end)
     else
       callback()
     end
@@ -64,7 +64,7 @@ local function parse_branch(HEAD)
   file_watch:stop()
   HEAD:is_file(function()
     HEAD:read(function(data)
-      local branch = data:match(constants.BRANCH_REGEX) or data:sub(1,6)
+      local branch = data:match(constants.BRANCH_REGEX) or data:sub(1, 6)
       if branch then
         file_watch:start(tostring(HEAD), {}, function()
           parse_branch(HEAD)
@@ -82,11 +82,11 @@ local function handle_git_dir(git_dir)
     if current_git_dir ~= git_dir then
       current_git_dir = git_dir
       git_dir:is_directory(
-      function()
-        local HEAD = git_dir..constants.HEAD
-        parse_branch(HEAD)
-      end,
-      clear)
+        function()
+          local HEAD = git_dir .. constants.HEAD
+          parse_branch(HEAD)
+        end,
+        clear)
     end
   end
 end
@@ -111,8 +111,8 @@ M.git_branch = function(bufno)
     current_branch = nil
     bufno = bufno or 0
     vim.schedule(function()
-     local file = vim.api.nvim_buf_get_name(bufno)
-      M.update_current_branch {buf=bufno, file=file}
+      local file = vim.api.nvim_buf_get_name(bufno)
+      M.update_current_branch { buf = bufno, file = file }
     end)
   end
 

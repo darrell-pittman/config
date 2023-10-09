@@ -13,7 +13,7 @@ end
 ]]
 
 cmp.setup({
-  snippet={
+  snippet = {
     expand = function(args)
       require('luasnip').lsp_expand(args.body)
     end,
@@ -25,13 +25,13 @@ cmp.setup({
     ['<C-e>'] = cmp.mapping.abort(),
     ['<CR>'] = cmp.mapping.confirm({ select = true }),
   }),
-  sources=cmp.config.sources({
+  sources = cmp.config.sources({
     -- {name='nvim_lua'},
-    {name='nvim_lsp'},
-    {name='path'},
-    {name='luasnip'}
-  },{
-    {name='buffer',keyword_length=3},
+    { name = 'nvim_lsp' },
+    { name = 'path' },
+    { name = 'luasnip' }
+  }, {
+    { name = 'buffer', keyword_length = 3 },
   }
   ),
   window = {
@@ -40,7 +40,7 @@ cmp.setup({
   },
   formatting = {
     format = lspkind.cmp_format({
-      with_text=true,
+      with_text = true,
       menu = {
         buffer = '[buf]',
         nvim_lsp = '[LSP]',
@@ -69,5 +69,3 @@ cmp.setup.cmdline(':', {
     { name = 'cmdline' }
   })
 })
-
-

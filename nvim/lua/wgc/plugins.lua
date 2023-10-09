@@ -58,7 +58,8 @@ require("lazy").setup({
   -- Only load if `make` is available
   {
     'nvim-telescope/telescope-fzf-native.nvim',
-    build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build',
+    build =
+    'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build',
   },
 
   -- "gc" to comment visual regions/lines
@@ -67,4 +68,3 @@ require("lazy").setup({
   'onsails/lspkind.nvim',
   'darrell-pittman/wgc-nvim-utils',
 })
-

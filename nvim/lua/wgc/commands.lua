@@ -18,13 +18,13 @@ local function create_run_command(info)
   local extension = file:extension()
   if extension == 'lua' then
     vim.api.nvim_buf_create_user_command(info.buf, 'WgcRun', function()
-      runner.run_love_project(file)
-    end,
+        runner.run_love_project(file)
+      end,
       {})
   elseif extension == 'rs' then
     vim.api.nvim_buf_create_user_command(info.buf, 'WgcRun', function()
-      runner.run_rust_project(file)
-    end,
+        runner.run_rust_project(file)
+      end,
       {})
   end
 end

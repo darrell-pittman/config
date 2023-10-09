@@ -36,4 +36,3 @@ M.status_line = function()
 end
 
 return M
-

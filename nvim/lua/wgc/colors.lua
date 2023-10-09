@@ -6,4 +6,3 @@ vim.cmd('colorscheme koehler')
 --vim.cmd('highlight StatusLineNC ctermbg=246 ctermfg=15')
 --vim.cmd('highlight NormalNC ctermbg=233')
 --vim.cmd('highlight Normal ctermbg=16')
-

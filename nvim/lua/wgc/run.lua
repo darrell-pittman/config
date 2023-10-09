@@ -36,7 +36,7 @@ local disp = nil
 local function kill_job()
   if current_job_id and disp then
     vim.fn.jobstop(current_job_id)
-    api.nvim_buf_set_lines(disp.buf, -1, -1, false, {pad(string.format("Killed Job [ id = %d ]", current_job_id))})
+    api.nvim_buf_set_lines(disp.buf, -1, -1, false, { pad(string.format("Killed Job [ id = %d ]", current_job_id)) })
     current_job_id = nil
   end
 end
@@ -114,7 +114,7 @@ local function default_runner(header, footer, cmd, buffered)
       stdout_buffered = buffered,
     })
     if disp then
-      api.nvim_buf_set_lines(disp.buf, -1, -1, false, {pad(string.format("Started Job [ id = %d ]", current_job_id))})
+      api.nvim_buf_set_lines(disp.buf, -1, -1, false, { pad(string.format("Started Job [ id = %d ]", current_job_id)) })
     end
   end
 end
@@ -123,14 +123,14 @@ function M.run_love_project(file)
   file:search_up(file_path:new('main.lua'), vim.schedule_wrap(function(main_file)
     if main_file then
       open_window(default_runner(tbl_pad({
-        'LOVE2d output ...', ''
-      }), tbl_pad({
-        '',
-        '--LOVE2d Finished!--',
-      }), {
-        'love',
-        tostring(main_file:parent()),
-      },
+          'LOVE2d output ...', ''
+        }), tbl_pad({
+          '',
+          '--LOVE2d Finished!--',
+        }), {
+          'love',
+          tostring(main_file:parent()),
+        },
         false))
     else
       print('Failed to find main.lua')
@@ -142,14 +142,14 @@ function M.run_rust_project(file)
   file:search_up(file_path:new('main.rs'), vim.schedule_wrap(function(main_file)
     if main_file then
       open_window(default_runner(tbl_pad({
-        'Cargo output ...', ''
-      }), tbl_pad({
-        '',
-        '--Cargo Finished!--',
-      }), {
-        'cargo',
-        'run',
-      },
+          'Cargo output ...', ''
+        }), tbl_pad({
+          '',
+          '--Cargo Finished!--',
+        }), {
+          'cargo',
+          'run',
+        },
         false))
     else
       print('Failed to find main.rs')
