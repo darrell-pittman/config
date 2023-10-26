@@ -77,23 +77,13 @@ fi
 
 btc() {
   local DEVICE="${1:-sony}"
-  local DEVICE_NUM=1
 
   DEVICE=${DEVICE,,}
 
-  echo "Device: ${DEVICE}"
-  if [[ $DEVICE == "sony" ]]
-  then
-    DEVICE_NUM=1
-  elif [[ $DEVICE == "galaxy" || $DEVICE == "buds" ]]
-  then
-    DEVICE_NUM=2
-  elif [[ $DEVICE == "intuos" ]]
-  then
-    DEVICE_NUM=3
-  fi
+  echo "Device: ${DEVICE} $(bluetoothctl devices|rg -i $DEVICE|head -1|cut -d " " -f 2)"
+
   bluetoothctl connect \
-    $(bluetoothctl devices|sort|head -$DEVICE_NUM|tail -1|cut -d " " -f 2)
+    $(bluetoothctl devices|rg -i $DEVICE|head -1|cut -d " " -f 2)
 }
 
 export EDITOR='nvim'
