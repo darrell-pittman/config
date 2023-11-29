@@ -498,7 +498,7 @@ Note the :tangle no after the begin_src block : this means that this block will 
   (defun wgc/tangle-configs ()
     "Tangle org init files."
     (when (thread-last '("emacs.org" "emacs-private.org")
-	    (mapcar (lambda (f) (expand-file-name f "~/config/emacs")))
+	    (mapcar (lambda (f) (expand-file-name f "/opt/config/emacs")))
 	    (seq-some (apply-partially 'string= (buffer-file-name))))
       (let ((org-confirm-babel-evaluate nil))
 	(org-babel-tangle))))
