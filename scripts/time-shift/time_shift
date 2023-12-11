@@ -49,65 +49,72 @@ run_timeshift() {
     fi
   done
 
-  if ! ${SUBVOL_OK} 
+  if ! ${SUBVOL_OK}
   then
     >&2 printf "Error: Invalid Subvol: %s\n" ${SUBVOL}
     return -1
   fi
 
   printf "Running timeshift for subvolume '%s'\n" ${SUBVOL}
+
   local CURRENT=${SUBVOL}_${TODAY}
   local CURRENT_PATH="${SOURCE_TARGET}/${CURRENT}"
   local BACKUP_CURRENT_PATH="${BACKUP_TARGET}/${CURRENT}" 
 
-  if [ ! -d "${CURRENT_PATH}" ]
-  then
-    btrfs subvolume snapshot -r "${SOURCE_TARGET}/${SUBVOL}" "${CURRENT_PATH}"
-  else
-    if [ ! -d "${BACKUP_CURRENT_PATH}" ]
-    then
-      >&2 printf "Error: Failed to find current backup.\n"
-      exit 1
-    fi
-    printf "Current Snapshot and Backup aleady exist for subvolume '%s'\n" ${SUBVOL}
-    return 0
-  fi
-
-  
-  local SNAPSHOTDATE_UNSAFE=$(\ls ${SOURCE_TARGET} \
+  local PARENTDATE_UNSAFE=$(\ls ${SOURCE_TARGET} \
     | sed -n -e "/^${CURRENT}$/d" \
-             -e "s/^${SUBVOL}_\([[:digit:]]\{8\}\)$/\1/p" \
+    -e "s/^${SUBVOL}_\([[:digit:]]\{8\}\)$/\1/p" \
     | sort -r \
     | head -1)
 
-  local SNAPSHOT_DATE=${SNAPSHOTDATE_UNSAFE:-0}
-  local PARENT="${SUBVOL}_${SNAPSHOT_DATE}"
+  local PARENT_DATE=${PARENTDATE_UNSAFE:-0}
+  local PARENT_OK=true
+  if ((PARENT_DATE < SAFETY_DATE || PARENT_DATE >= TODAY))
+  then
+    PARENT_OK=false
+  fi
+
+  local PARENT="${SUBVOL}_${PARENT_DATE}"
   local PARENT_PATH="${SOURCE_TARGET}/${PARENT}"
+  local BACKUP_PARENT_PATH="${BACKUP_TARGET}/${PARENT}"
 
-  if ((SNAPSHOT_DATE < SAFETY_DATE || SNAPSHOT_DATE >= TODAY))
+  if [ ! -d "${CURRENT_PATH}" ]
   then
-    >&2 printf "Error: Invalid Parent Snapshot: %s\n" ${PARENT}
-    exit 1
-  fi
-  printf "Found Parent Snapshot '%s' for Current Snapshot '%s'\n" ${PARENT} ${CURRENT}
-
-  if [ -d "${BACKUP_CURRENT_PATH}" ]
-  then
-    printf "Backup already exists: '%s'\n" ${BACKUP_CURRENT_PATH}
-    return 0
-  fi
-
-  local BACKUP_PARENT_PATH="${BACKUP_TARGET}/${PARENT}" 
-  if [ ! -d "${BACKUP_PARENT_PATH}" ]
-  then
-    >&2 printf "Error: Failed to find parent backup: %s\n" ${BACKUP_PARENT_PATH}
-    exit 1
-  fi
-
-  if btrfs send -p ${PARENT_PATH} ${CURRENT_PATH} | btrfs receive ${BACKUP_TARGET}
-  then
-    if [[ -d "${CURRENT_PATH}" && -d "${BACKUP_TARGET}/${CURRENT}" ]]
+    if btrfs subvolume snapshot -r "${SOURCE_TARGET}/${SUBVOL}" "${CURRENT_PATH}"
     then
+      printf "Readonly Snapshot '%s' created.\n" ${CURRENT_PATH}
+    else
+      >&2 printf "Error: Failed to create readonly snapshot '%s'.\n" ${CURRENT_PATH}
+      exit -1
+    fi
+  else
+    printf "Found Current Readonly Snapshot '%s'.\n" ${CURRENT_PATH}
+  fi
+
+  if [ ! -d "${BACKUP_CURRENT_PATH}" ]
+  then
+    if [[ PARENT_OK && -d "${BACKUP_PARENT_PATH}" ]]
+    then
+      printf "Deleting backup subvolume '%s' to make space.\n" ${BACKUP_PARENT_PATH}
+      btrfs subvolume delete -c ${BACKUP_PARENT_PATH}
+    fi
+    printf "Sending '%s' to '%s'.\n" ${CURRENT_PATH} ${BACKUP_TARGET}
+    if btrfs send ${CURRENT_PATH} | btrfs receive ${BACKUP_TARGET}
+    then
+      printf "'%s' successfully sent to '%s'.\n" ${CURRENT_PATH} ${BACKUP_TARGET}
+    else
+      >&2 printf "Error: Failed to send '%s' to '%s'.\n" ${CURRENT_PATH} ${BACKUP_TARGET}
+      exit -1
+    fi
+  else
+    printf "Found existing backup '%s'.\n" ${BACKUP_CURRENT_PATH}
+  fi
+
+  if [[ -d "${CURRENT_PATH}" && -d "${BACKUP_TARGET}/${CURRENT}" ]]
+  then
+    if [[ PARENT_OK && -d "${PARENT_PATH}" ]]
+    then
+      printf "Deleting snapshot '%s'.\n" ${PARENT_PATH}
       btrfs subvolume delete -c ${PARENT_PATH}
     fi
   fi
