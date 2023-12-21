@@ -13,6 +13,8 @@ vim.opt.rtp:prepend(lazypath)
 
 vim.g.mapleader = ' '
 
+vim.cmd [[packadd termdebug]]
+
 require("lazy").setup({
   {
     "oxfist/night-owl.nvim",
