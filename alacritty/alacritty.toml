@@ -1,0 +1,9 @@
+[font]
+size = 15.0
+
+[font.bold]
+style = "Regular"
+
+[window]
+opacity = 1.0
+startup_mode = "Maximized"
