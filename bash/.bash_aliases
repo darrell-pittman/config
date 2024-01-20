@@ -1,5 +1,5 @@
 alias vim='nvim'
-alias ls='ls -p --color=auto'
+alias ls='ls -p --color=auto --group-directories-first'
 alias ll='ls -la'
 alias grep='grep --color=auto'
 
@@ -15,3 +15,4 @@ alias pw='pipewire-start'
 alias buds='btc buds'
 alias dev-gimp='(source /opt/config/bash/gimp_vars; ${GIMP_PREFIX}/bin/gimp)'
 alias svim='sudoedit'
+alias sp='loginctl suspend'
