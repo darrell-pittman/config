@@ -425,12 +425,12 @@ Note the :tangle no after the begin_src block : this means that this block will 
       (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
 
     ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-    (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
-    (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
-    (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
-    (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
-    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-block nil  :foreground 'unspecified :inherit 'fixed-pitch)
+    (set-face-attribute 'org-table nil   :inherit 'fixed-pitch)
+    (set-face-attribute 'org-formula nil :inherit 'fixed-pitch)
+    (set-face-attribute 'org-code nil    :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-verbatim nil  :inherit '(shadow fixed-pitch))
     (set-face-attribute 'org-special-keyword nil
                         :inherit '(font-lock-comment-face fixed-pitch))
     (set-face-attribute 'org-meta-line nil
@@ -800,4 +800,7 @@ Write customizations to file to avoid polluting init.el
   (defun wgc/format-currancy (num)
     (format "%.2f" num))
 
+  (setq major-mode-remap-alist
+    '((rust-mode.rust-ts-mode)))
+  
 #+end_src

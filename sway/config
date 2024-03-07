@@ -279,7 +279,7 @@ default_border pixel 2
 
 # Apps
 bindsym $mod+bracketright exec swaymsg 'exec GDK_DPI_SCALE=$gdk_dpi_scale $browser; workspace $browser_workspace'
-bindsym $mod+bracketleft exec swaymsg 'exec flatpak run org.blender.Blender; workspace $blender_workspace'
+bindsym $mod+bracketleft exec swaymsg 'exec DRI_PRIME=1 blender; workspace $blender_workspace'
 
 # Font
 font pango:Fira Code Retina 16
