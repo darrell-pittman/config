@@ -2,7 +2,7 @@
 
 # Early Start Up
 exec gammastep
-exec pipewire
+exec artix-pipewire-launcher
 
 ### Variables
 #
@@ -18,9 +18,10 @@ set $term alacritty
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
-set $menu bemenu-run -W 0.5 --tf '#b5f5b7' --hf '#64a3f5' --hb '#000011' -b -i \
-    -l 15 --fn 'Cantarell 20' -p '▶▶' --no-exec | xargs swaymsg exec
+#set $menu bemenu-run -W 0.5 --tf '#b5f5b7' --hf '#64a3f5' --hb '#000011' -b -i \
+#    -l 15 --fn 'Cantarell 20' -p '▶▶' --no-exec | xargs swaymsg exec
 
+set $menu wofi --show=drun --prompt=launch
 # Browser setup
 set $browser firefox
 

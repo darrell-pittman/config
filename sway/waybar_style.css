@@ -31,6 +31,10 @@ window#waybar box{
     background:transparent;
     border-color: white;
 }
+#workspaces button.active {
+    background:transparent;
+    border-color: white;
+}
 
 #workspaces button label {
     background: transparent;
