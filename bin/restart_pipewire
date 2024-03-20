@@ -1,7 +1,25 @@
 #!/bin/sh
+echo "Terminating PipeWire processes ..."
+pkill -u "${USER}" -x pipewire\(-pulse\)?\|wireplumber\|mpris-proxy 1>/dev/null 2>&1
+pidwait -u "${USER}" -x pipewire\(-pulse\)?\|wireplumber\|mpris-proxy
+echo "PipeWire terminated."
 
-pkill -x -9 pipewire
-exec 1>/dev/null 
-exec 2>&1
-exec artix-pipewire-launcher &
+pipewire &
+
+pipewire-pulse &
+
+sleep 1
+
+wireplumber &
+
+sleep 1
+
+mpris-proxy &
+
+
+
+#pkill -x -9 pipewire
+#exec 1>/dev/null 
+#exec 2>&1
+#exec artix-pipewire-launcher &
 

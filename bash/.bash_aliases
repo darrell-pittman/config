@@ -1,5 +1,5 @@
 alias vim='nvim'
-alias ls='ls -p --color=auto --group-directories-first'
+alias ls='ls -p --hyperlink=auto --color=auto --group-directories-first'
 alias ll='ls -la'
 alias grep='grep --color=auto'
 

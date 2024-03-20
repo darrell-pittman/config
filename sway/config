@@ -2,7 +2,7 @@
 
 # Early Start Up
 exec gammastep
-exec artix-pipewire-launcher
+exec restart_pipewire
 
 ### Variables
 #
