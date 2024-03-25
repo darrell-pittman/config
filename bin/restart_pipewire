@@ -4,17 +4,17 @@ pkill -u "${USER}" -x pipewire\(-pulse\)?\|wireplumber\|mpris-proxy 1>/dev/null 
 pidwait -u "${USER}" -x pipewire\(-pulse\)?\|wireplumber\|mpris-proxy
 echo "PipeWire terminated."
 
-pipewire &
+pipewire 1>/dev/null 2>&1 &
 
-pipewire-pulse &
-
-sleep 1
-
-wireplumber &
+pipewire-pulse 1>/dev/null 2>&1 &
 
 sleep 1
 
-mpris-proxy &
+wireplumber 1>/dev/null 2>&1 &
+
+sleep 2
+
+mpris-proxy 1>/dev/null 2>&1 &
 
 
 
