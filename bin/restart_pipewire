@@ -1,7 +1,9 @@
 #!/bin/sh
 echo "Terminating PipeWire processes ..."
-pkill -u "${USER}" -x pipewire\(-pulse\)?\|wireplumber\|mpris-proxy 1>/dev/null 2>&1
-pidwait -u "${USER}" -x pipewire\(-pulse\)?\|wireplumber\|mpris-proxy
+pkill -u "${USER}" -x waybar 1>/dev/null 2>&1
+pidwait -u "${USER}" -x waybar
+pkill -u "${USER}" -x pipewire\(-pulse\)?\|wireplumber\|mpris-proxy|sway-audio-idle-inhibit 1>/dev/null 2>&1
+pidwait -u "${USER}" -x pipewire\(-pulse\)?\|wireplumber\|mpris-proxy|sway-audio-idle-inhibit
 echo "PipeWire terminated."
 
 pipewire 1>/dev/null 2>&1 &
@@ -15,6 +17,14 @@ wireplumber 1>/dev/null 2>&1 &
 sleep 2
 
 mpris-proxy 1>/dev/null 2>&1 &
+
+sleep 1
+
+sway-audio-idle-inhibit 1>/dev/null 2>&1 &
+
+sleep 1
+
+waybar 1>/dev/null 2>&1 &
 
 
 
