@@ -1,0 +1,3 @@
+#!/bin/sh
+sv stop NetworkManager
+sv start NetworkManager
