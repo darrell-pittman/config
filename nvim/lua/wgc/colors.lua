@@ -1,4 +1,6 @@
-vim.cmd('colorscheme night-owl')
+vim.cmd('colorscheme murphy')
+--require("night-owl").setup()
+--vim.cmd.colorscheme("night-owl")
 --vim.cmd('highlight LineNr ctermfg=246')
 --vim.cmd('highlight ColorColumn ctermbg=236')
 --vim.cmd('highlight MatchParen ctermfg=15 ctermbg=25')
