@@ -19,3 +19,5 @@ if [ -f ~/.bashrc ]; then . ~/.bashrc; fi
 #  exec startx
 #fi
 
+~/bin/restart_pipewire
+
